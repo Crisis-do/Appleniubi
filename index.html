@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>璇惧爞涓撴敞鍔涜嚜鎴戠鐞嗗姪鎵?/title>
+<title>课堂专注力自我管理助手</title>
 <style>
 :root {
   --primary: #1A5276;
@@ -184,7 +184,7 @@ body {
 
 <div id="app">
 
-<!-- ==================== 浠婃棩璇惧爞 ==================== -->
+<!-- ==================== 今日课堂 ==================== -->
 <div class="page active" id="pg-today">
   <div class="today-header">
     <div class="today-date" id="todayDate"></div>
@@ -194,40 +194,40 @@ body {
   <div id="courseList"></div>
 </div>
 
-<!-- ==================== 浠诲姟璁板綍 ==================== -->
+<!-- ==================== 任务记录 ==================== -->
 <div class="page" id="pg-records">
   <div class="stat-cards">
-    <div class="stat-card primary"><div class="sv" id="statRate">82%</div><div class="sl">鏈懆瀹屾垚鐜?/div></div>
-    <div class="stat-card accent"><div class="sv" id="statFocus">12.5h</div><div class="sl">绱涓撴敞</div></div>
-    <div class="stat-card warn"><div class="sv" id="statStreak">5澶?/div><div class="sl">杩炵画鎵撳崱</div></div>
+    <div class="stat-card primary"><div class="sv" id="statRate">82%</div><div class="sl">本周完成率</div></div>
+    <div class="stat-card accent"><div class="sv" id="statFocus">12.5h</div><div class="sl">累计专注</div></div>
+    <div class="stat-card warn"><div class="sv" id="statStreak">5天</div><div class="sl">连续打卡</div></div>
   </div>
   <div id="recordList"></div>
 </div>
 
-<!-- ==================== 鎴戠殑 ==================== -->
+<!-- ==================== 我的 ==================== -->
 <div class="page" id="pg-profile">
   <div class="profile-card">
-    <div class="pav">馃摎</div>
-    <div class="pname" id="profileName">鍖诲鐢?/div>
-    <div class="pinfo" id="profileMajor">涓村簥鍖诲 路 澶т笁</div>
+    <div class="pav">📚</div>
+    <div class="pname" id="profileName">医学生</div>
+    <div class="pinfo" id="profileMajor">临床医学 · 大三</div>
     <div class="pstats">
-      <div class="ps"><div class="psn" id="pfFocus">48h</div><div class="psl">鎬讳笓娉ㄦ椂闀?/div></div>
-      <div class="ps"><div class="psn" id="pfTasks">156</div><div class="psl">瀹屾垚浠诲姟</div></div>
-      <div class="ps"><div class="psn" id="pfMind">23娆?/div><div class="psl">姝ｅ康缁冧範</div></div>
+      <div class="ps"><div class="psn" id="pfFocus">48h</div><div class="psl">总专注时长</div></div>
+      <div class="ps"><div class="psn" id="pfTasks">156</div><div class="psl">完成任务</div></div>
+      <div class="ps"><div class="psn" id="pfMind">23次</div><div class="psl">正念练习</div></div>
     </div>
   </div>
   <div class="menu-list">
-    <div class="menu-row" onclick="toast('璇捐〃绠＄悊寮€鍙戜腑')"><span class="mr-icon">馃搮</span><span class="mr-text">璇捐〃绠＄悊</span><span class="mr-arrow">鈥?/span></div>
-    <div class="menu-row" onclick="toast('鎻愰啋璁剧疆寮€鍙戜腑')"><span class="mr-icon">馃敂</span><span class="mr-text">涓撴敞鎻愰啋璁剧疆</span><span class="mr-arrow">鈥?/span></div>
-    <div class="menu-row" onclick="toast('鐩爣璁惧畾寮€鍙戜腑')"><span class="mr-icon">馃幆</span><span class="mr-text">瀛︿範鐩爣璁惧畾</span><span class="mr-arrow">鈥?/span></div>
-    <div class="menu-row" onclick="toast('AI鍋忓ソ寮€鍙戜腑')"><span class="mr-icon">馃</span><span class="mr-text">AI鎺ㄨ崘鍋忓ソ</span><span class="mr-arrow">鈥?/span></div>
+    <div class="menu-row" onclick="toast('课表管理开发中')"><span class="mr-icon">📅</span><span class="mr-text">课表管理</span><span class="mr-arrow">›</span></div>
+    <div class="menu-row" onclick="toast('提醒设置开发中')"><span class="mr-icon">🔔</span><span class="mr-text">专注提醒设置</span><span class="mr-arrow">›</span></div>
+    <div class="menu-row" onclick="toast('目标设定开发中')"><span class="mr-icon">🎯</span><span class="mr-text">学习目标设定</span><span class="mr-arrow">›</span></div>
+    <div class="menu-row" onclick="toast('AI偏好开发中')"><span class="mr-icon">🤖</span><span class="mr-text">AI推荐偏好</span><span class="mr-arrow">›</span></div>
   </div>
-  <div class="section-title">瀛︿範宸ュ叿 路 蹇嵎鍏ュ彛</div>
+  <div class="section-title">学习工具 · 快捷入口</div>
   <div class="tool-grid">
-    <div class="tool-card" onclick="toast('UpToDate 璺宠浆涓€?)"><div class="tool-icon">馃敩</div><div class="tool-name">UpToDate</div><div class="tool-desc">涓村簥椤鹃棶</div></div>
-    <div class="tool-card" onclick="toast('PubMed 璺宠浆涓€?)"><div class="tool-icon">馃摉</div><div class="tool-name">PubMed</div><div class="tool-desc">鏂囩尞妫€绱?/div></div>
-    <div class="tool-card" onclick="toast('CompleteAnatomy 璺宠浆涓€?)"><div class="tool-icon">馃Υ</div><div class="tool-name">3D瑙ｅ墫</div><div class="tool-desc">CompleteAnatomy</div></div>
-    <div class="tool-card" onclick="toast('鍖诲棰樺簱璺宠浆涓€?)"><div class="tool-icon">馃摑</div><div class="tool-name">鍖诲棰樺簱</div><div class="tool-desc">鍖昏€冨府</div></div>
+    <div class="tool-card" onclick="toast('UpToDate 跳转中…')"><div class="tool-icon">🔬</div><div class="tool-name">UpToDate</div><div class="tool-desc">临床顾问</div></div>
+    <div class="tool-card" onclick="toast('PubMed 跳转中…')"><div class="tool-icon">📖</div><div class="tool-name">PubMed</div><div class="tool-desc">文献检索</div></div>
+    <div class="tool-card" onclick="toast('CompleteAnatomy 跳转中…')"><div class="tool-icon">🦴</div><div class="tool-name">3D解剖</div><div class="tool-desc">CompleteAnatomy</div></div>
+    <div class="tool-card" onclick="toast('医学题库跳转中…')"><div class="tool-icon">📝</div><div class="tool-name">医学题库</div><div class="tool-desc">医考帮</div></div>
   </div>
 </div>
 
@@ -236,30 +236,30 @@ body {
 <!-- ==================== FOCUS MODE OVERLAY ==================== -->
 <div class="focus-overlay" id="focusOverlay">
   <div class="focus-timer" id="focusTimer">25:00</div>
-  <div class="focus-label" id="focusLabel">涓撴敞涓?路 绗?杞?/div>
+  <div class="focus-label" id="focusLabel">专注中 · 第1轮</div>
   <div class="focus-tasks" id="focusTasks"></div>
   <div class="focus-actions">
-    <button class="focus-btn mind" onclick="startMindfulness()">馃 姝ｅ康</button>
-    <button class="focus-btn break" id="breakBtn" style="display:none" onclick="startBreak()">鈽?浼戞伅</button>
-    <button class="focus-btn end" onclick="endFocus()">鉁?缁撴潫</button>
+    <button class="focus-btn mind" onclick="startMindfulness()">🧘 正念</button>
+    <button class="focus-btn break" id="breakBtn" style="display:none" onclick="startBreak()">☕ 休息</button>
+    <button class="focus-btn end" onclick="endFocus()">✅ 结束</button>
   </div>
 </div>
 
 <!-- ==================== MINDFULNESS OVERLAY ==================== -->
 <div class="mind-overlay" id="mindOverlay">
   <div class="mind-box">
-    <div class="mind-circle" id="mindCircle">鍚告皵</div>
-    <div class="mind-text">姝ｅ康鍛煎惛</div>
-    <div class="mind-sub">璺熼殢鍦嗗湀鐨勮妭濂忥紝涓撴敞浣犵殑鍛煎惛</div>
+    <div class="mind-circle" id="mindCircle">吸气</div>
+    <div class="mind-text">正念呼吸</div>
+    <div class="mind-sub">跟随圆圈的节奏，专注你的呼吸</div>
     <div class="mind-timer" id="mindTimer">2:00</div>
-    <button class="focus-btn end" onclick="endMindfulness()" style="background:#16A085;color:#fff">瀹屾垚缁冧範</button>
+    <button class="focus-btn end" onclick="endMindfulness()" style="background:#16A085;color:#fff">完成练习</button>
   </div>
 </div>
 
 <!-- ==================== REVIEW MODAL ==================== -->
 <div class="modal-overlay" id="reviewModal">
   <div class="modal-sheet">
-    <h3>馃搵 璇惧悗澶嶇洏 <button class="modal-close" onclick="closeReview()">脳</button></h3>
+    <h3>📋 课后复盘 <button class="modal-close" onclick="closeReview()">×</button></h3>
     <div id="reviewContent"></div>
   </div>
 </div>
@@ -269,28 +269,28 @@ body {
 
 <!-- ==================== TAB BAR ==================== -->
 <div class="tab-bar">
-  <div class="tab active" data-pg="today"><span class="tb-icon">馃搵</span><span class="tb-label">浠婃棩璇惧爞</span></div>
-  <div class="tab" data-pg="records"><span class="tb-icon">馃搳</span><span class="tb-label">浠诲姟璁板綍</span></div>
-  <div class="tab" data-pg="profile"><span class="tb-icon">馃懁</span><span class="tb-label">鎴戠殑</span></div>
+  <div class="tab active" data-pg="today"><span class="tb-icon">📋</span><span class="tb-label">今日课堂</span></div>
+  <div class="tab" data-pg="records"><span class="tb-icon">📊</span><span class="tb-label">任务记录</span></div>
+  <div class="tab" data-pg="profile"><span class="tb-icon">👤</span><span class="tb-label">我的</span></div>
 </div>
 
 <script>
 // ===== DATA =====
 const SCHEDULE = [
-  { id:1, name:'鐢熺悊瀛?, time:'08:00-09:40', type:'涓撲笟璇撅紙鐞嗚锛?, room:'鏁欏妤?01', tasks:[
-    { text:'璁板綍3涓牳蹇冩蹇?, ai:'璇ヨ绋嬪垎蹇冪巼杈冮珮锛屽缓璁噸鐐瑰叧娉?, done:false },
-    { text:'鎻愬嚭1涓鍫傜枒闂?, ai:'涓诲姩鎻愰棶鍙姞娣辫蹇?, done:false },
-    { text:'鐢ㄦ€濈淮瀵煎浘鏁寸悊妗嗘灦', ai:'鎺ㄨ崘浣跨敤 XMind 鎴栨墜缁?, done:false }
+  { id:1, name:'生理学', time:'08:00-09:40', type:'专业课（理论）', room:'教学楼301', tasks:[
+    { text:'记录3个核心概念', ai:'该课程分心率较高，建议重点关注', done:false },
+    { text:'提出1个课堂疑问', ai:'主动提问可加深记忆', done:false },
+    { text:'用思维导图整理框架', ai:'推荐使用 XMind 或手绘', done:false }
   ], color:'#2980B9' },
-  { id:2, name:'鍖诲鑻辫', time:'10:00-11:40', type:'鑻辫璇?, room:'鏁欏妤?05', tasks:[
-    { text:'璁板綍5涓柊鍗曡瘝', ai:'绉疮涓撲笟璇嶆眹', done:false },
-    { text:'鍑嗗璇惧爞鍙戣█', ai:'璇█杈撳嚭淇冭繘鎺屾彙', done:false },
-    { text:'鏌ヨ瘝鍚庣珛鍗宠褰?, ai:'鍙婃椂鏁寸悊閬垮厤閬楀繕', done:false }
+  { id:2, name:'医学英语', time:'10:00-11:40', type:'英语课', room:'教学楼205', tasks:[
+    { text:'记录5个新单词', ai:'积累专业词汇', done:false },
+    { text:'准备课堂发言', ai:'语言输出促进掌握', done:false },
+    { text:'查词后立即记录', ai:'及时整理避免遗忘', done:false }
   ], color:'#16A085' },
-  { id:3, name:'鎬濇斂璇?, time:'14:00-15:40', type:'鍏€夎', room:'缁煎悎妤?02', tasks:[
-    { text:'璁板綍1涓紩鍙戞€濊€冪殑瑙傜偣', ai:'鍩瑰吇鎵瑰垽鎬ф€濈淮', done:false },
-    { text:'瀹屾垚20涓崟璇嶈儗璇?, ai:'鍒╃敤纰庣墖鏃堕棿绉疮', done:false },
-    { text:'鏁寸悊寰呭姙娓呭崟', ai:'娓呯悊澶ц剳閲婃斁涓撴敞鍔?, done:false }
+  { id:3, name:'思政课', time:'14:00-15:40', type:'公选课', room:'综合楼102', tasks:[
+    { text:'记录1个引发思考的观点', ai:'培养批判性思维', done:false },
+    { text:'完成20个单词背诵', ai:'利用碎片时间积累', done:false },
+    { text:'整理待办清单', ai:'清理大脑释放专注力', done:false }
   ], color:'#E67E22' },
 ];
 
@@ -304,15 +304,15 @@ let mindInterval = null, mindSec = 120;
 // ===== INIT =====
 function initToday() {
   const now = new Date();
-  const days = ['鏃?,'涓€','浜?,'涓?,'鍥?,'浜?,'鍏?];
-  document.getElementById('todayDate').textContent = now.getFullYear() + '骞? + (now.getMonth()+1) + '鏈? + now.getDate() + '鏃?;
-  document.getElementById('todayDow').textContent = '鏄熸湡' + days[now.getDay()];
+  const days = ['日','一','二','三','四','五','六'];
+  document.getElementById('todayDate').textContent = now.getFullYear() + '年' + (now.getMonth()+1) + '月' + now.getDate() + '日';
+  document.getElementById('todayDow').textContent = '星期' + days[now.getDay()];
   const motds = [
-    '馃搶 涓撴敞鐨勪綘锛屾瘮鎵嬫満閲岀殑浠讳綍鍐呭閮界簿褰?,
-    '馃搶 姣忚妭璇捐瀹氱洰鏍囷紝鏄鑷繁鐨勬壙璇?,
-    '馃搶 浣犱笉鏄湪瀵规姉鎵嬫満锛屾槸鍦ㄥ畧鎶よ嚜宸辩殑鏃堕棿',
-    '馃搶 姝ｅ康涓€鍒嗛挓锛岃儨杩囪蛋绁炰竴灏忔椂',
-    '馃搶 浠婂ぉ鐨勪换鍔″喅瀹氭槑澶╃殑浣?
+    '📌 专注的你，比手机里的任何内容都精彩',
+    '📌 每节课设定目标，是对自己的承诺',
+    '📌 你不是在对抗手机，是在守护自己的时间',
+    '📌 正念一分钟，胜过走神一小时',
+    '📌 今天的任务决定明天的你'
   ];
   document.getElementById('todayMotd').textContent = motds[now.getDay() % motds.length];
   renderCourses();
@@ -327,19 +327,19 @@ function renderCourses() {
       <div class="course-top">
         <div>
           <div class="course-name">${c.name}</div>
-          <div class="course-time">馃晲 ${c.time} 路 馃搷 ${c.room}</div>
+          <div class="course-time">🕐 ${c.time} · 📍 ${c.room}</div>
         </div>
         <span class="course-type">${c.type}</span>
       </div>
       <div class="course-tasks">
         ${c.tasks.map((t, i) => `<div class="task-chip ${t.done?'checked':''}" onclick="toggleTask(${c.id},${i})">
-          <span class="tc-icon">${t.done?'鉁?:'鈽?}</span>
+          <span class="tc-icon">${t.done?'✅':'☐'}</span>
           <span>${t.text}</span>
         </div>`).join('')}
       </div>
       <div class="course-foot">
-        <span class="ai-hint">馃 AI: ${doneCount===c.tasks.length?'鍏ㄩ儴瀹屾垚锛屽お妫掍簡锛?:c.tasks[0].ai}</span>
-        <button class="start-btn" onclick="startCourse(${c.id})">鈻?寮€濮嬫湰鑺傝</button>
+        <span class="ai-hint">🤖 AI: ${doneCount===c.tasks.length?'全部完成，太棒了！':c.tasks[0].ai}</span>
+        <button class="start-btn" onclick="startCourse(${c.id})">▶ 开始本节课</button>
       </div>
     </div>`;
   }).join('');
@@ -357,12 +357,12 @@ function startCourse(courseId) {
   currentCourse = SCHEDULE.find(x => x.id === courseId);
   focusSec = 25*60; focusRound = 1;
   document.getElementById('focusTimer').textContent = '25:00';
-  document.getElementById('focusLabel').textContent = '涓撴敞涓?路 绗? + focusRound + '杞?;
+  document.getElementById('focusLabel').textContent = '专注中 · 第' + focusRound + '轮';
   document.getElementById('breakBtn').style.display = 'none';
 
   const ft = document.getElementById('focusTasks');
   ft.innerHTML = currentCourse.tasks.map((t, i) =>
-    `<div class="ft-task" onclick="toggleFocusTask(${i})">${t.done?'鈼?:'鈼?} ${t.text}</div>`
+    `<div class="ft-task" onclick="toggleFocusTask(${i})">${t.done?'●':'○'} ${t.text}</div>`
   ).join('');
 
   document.getElementById('focusOverlay').classList.add('show');
@@ -373,7 +373,7 @@ function toggleFocusTask(i) {
   currentCourse.tasks[i].done = !currentCourse.tasks[i].done;
   const ft = document.getElementById('focusTasks');
   ft.innerHTML = currentCourse.tasks.map((t, i2) =>
-    `<div class="ft-task ${t.done?'done':''}" onclick="toggleFocusTask(${i2})">${t.done?'鈼?:'鈼?} ${t.text}</div>`
+    `<div class="ft-task ${t.done?'done':''}" onclick="toggleFocusTask(${i2})">${t.done?'●':'○'} ${t.text}</div>`
   ).join('');
 }
 
@@ -386,10 +386,10 @@ function startFocusTimer() {
     if (focusSec <= 0) {
       clearInterval(focusInterval);
       focusRound++;
-      document.getElementById('focusLabel').textContent = '涓撴敞涓?路 绗? + focusRound + '杞?;
+      document.getElementById('focusLabel').textContent = '专注中 · 第' + focusRound + '轮';
       document.getElementById('breakBtn').style.display = 'inline-block';
       document.getElementById('focusTimer').textContent = '25:00';
-      toast('馃帀 涓€杞笓娉ㄥ畬鎴愶紒浼戞伅涓€涓嬪惂');
+      toast('🎉 一轮专注完成！休息一下吧');
     }
   }, 1000);
 }
@@ -397,7 +397,7 @@ function startFocusTimer() {
 function startBreak() {
   if (focusInterval) clearInterval(focusInterval);
   let breakSec = 120;
-  document.getElementById('focusLabel').textContent = '浼戞伅涓?鈽?;
+  document.getElementById('focusLabel').textContent = '休息中 ☕';
   document.getElementById('breakBtn').style.display = 'none';
   focusInterval = setInterval(() => {
     breakSec--;
@@ -407,7 +407,7 @@ function startBreak() {
       clearInterval(focusInterval);
       focusSec = 25*60;
       document.getElementById('focusTimer').textContent = '25:00';
-      document.getElementById('focusLabel').textContent = '涓撴敞涓?路 绗? + focusRound + '杞?;
+      document.getElementById('focusLabel').textContent = '专注中 · 第' + focusRound + '轮';
       startFocusTimer();
     }
   }, 1000);
@@ -432,7 +432,7 @@ function startMindfulness() {
   mindSec = 120;
   document.getElementById('mindTimer').textContent = '2:00';
   if (mindInterval) clearInterval(mindInterval);
-  const phases = ['鍚告皵','灞忔伅','鍛兼皵','灞忔伅'];
+  const phases = ['吸气','屏息','呼气','屏息'];
   let pi = 0;
   mindInterval = setInterval(() => {
     mindSec--;
@@ -446,7 +446,7 @@ function startMindfulness() {
 function endMindfulness() {
   if (mindInterval) clearInterval(mindInterval);
   document.getElementById('mindOverlay').classList.remove('show');
-  toast('馃 姝ｅ康缁冧範瀹屾垚锛?);
+  toast('🧘 正念练习完成！');
 }
 
 // ===== REVIEW =====
@@ -456,20 +456,20 @@ function showReview(course) {
   const pct = Math.round(done/total*100);
   document.getElementById('reviewContent').innerHTML = `
     <div style="text-align:center;margin-bottom:16px">
-      <div style="font-size:48px;margin-bottom:4px">${pct>=80?'馃帀':pct>=50?'馃憤':'馃挭'}</div>
-      <div style="font-weight:800;font-size:20px">${course.name} 澶嶇洏</div>
-      <div style="font-size:14px;color:#7F8C8D;margin-top:4px">浠诲姟瀹屾垚鐜?<b style="color:${pct>=80?'#16A085':'#E67E22'}">${pct}%</b></div>
+      <div style="font-size:48px;margin-bottom:4px">${pct>=80?'🎉':pct>=50?'👍':'💪'}</div>
+      <div style="font-weight:800;font-size:20px">${course.name} 复盘</div>
+      <div style="font-size:14px;color:#7F8C8D;margin-top:4px">任务完成率 <b style="color:${pct>=80?'#16A085':'#E67E22'}">${pct}%</b></div>
     </div>
-    <div class="fg"><label>宸插畬鎴?/label>
-      ${course.tasks.filter(t => t.done).map(t => '<div class="task-chip checked"><span class="tc-icon">鉁?/span>'+t.text+'</div>').join('') || '<div style="font-size:13px;color:#999;padding:8px">鏃犲畬鎴愰」</div>'}
+    <div class="fg"><label>已完成</label>
+      ${course.tasks.filter(t => t.done).map(t => '<div class="task-chip checked"><span class="tc-icon">✅</span>'+t.text+'</div>').join('') || '<div style="font-size:13px;color:#999;padding:8px">无完成项</div>'}
     </div>
-    <div class="fg"><label>鏈畬鎴?/label>
-      ${course.tasks.filter(t => !t.done).map(t => '<div class="task-chip"><span class="tc-icon">猬?/span>'+t.text+'</div>').join('') || '<div style="font-size:13px;color:#999;padding:8px">鍏ㄩ儴瀹屾垚锛?/div>'}
+    <div class="fg"><label>未完成</label>
+      ${course.tasks.filter(t => !t.done).map(t => '<div class="task-chip"><span class="tc-icon">⬜</span>'+t.text+'</div>').join('') || '<div style="font-size:13px;color:#999;padding:8px">全部完成！</div>'}
     </div>
     <div style="background:#EBF5FB;border-radius:10px;padding:12px;font-size:13px;color:#2980B9;margin-bottom:12px">
-      馃 AI 鍙嶉锛?{pct>=80?'浠婂ぉ琛ㄧ幇闈炲父妫掞紝缁х画淇濇寔杩欎釜鑺傚锛?:'浠婂ぉ杩樻湁鎻愬崌绌洪棿锛屼笅娆℃彁鍓嶈瀹氭槑纭洰鏍囦細鏈夊府鍔┿€?}
+      🤖 AI 反馈：${pct>=80?'今天表现非常棒，继续保持这个节奏！':'今天还有提升空间，下次提前设定明确目标会有帮助。'}
     </div>
-    <button class="start-btn" style="width:100%;padding:12px" onclick="closeReview();toast('璁板綍宸蹭繚瀛?鉁?)">淇濆瓨骞跺叧闂?/button>
+    <button class="start-btn" style="width:100%;padding:12px" onclick="closeReview();toast('记录已保存 ✅')">保存并关闭</button>
   `;
   document.getElementById('reviewModal').classList.add('show');
 
@@ -492,10 +492,10 @@ function closeReview() {
 function updateRecords() {
   document.getElementById('statRate').textContent = RECORDS.length ? Math.round(RECORDS.reduce((a,r)=>a+r.pct,0)/RECORDS.length) + '%' : '--';
   document.getElementById('statFocus').textContent = (FOCUS_MINUTES/60).toFixed(1)+'h';
-  document.getElementById('statStreak').textContent = RECORDS.length + '娆?;
+  document.getElementById('statStreak').textContent = RECORDS.length + '次';
   document.getElementById('pfFocus').textContent = (FOCUS_MINUTES/60).toFixed(0)+'h';
   document.getElementById('pfTasks').textContent = TASKS_DONE;
-  document.getElementById('pfMind').textContent = Math.floor(FOCUS_MINUTES/5) + '娆?;
+  document.getElementById('pfMind').textContent = Math.floor(FOCUS_MINUTES/5) + '次';
 
   const rl = document.getElementById('recordList');
   if (!rl) return;
@@ -505,8 +505,8 @@ function updateRecords() {
         <span class="rr-name">${r.course}</span>
         <span class="rr-pct ${r.pct>=80?'good':r.pct>=50?'mid':'low'}">${r.pct}%</span>
       </div>
-      <div style="font-size:11px;color:#BDC3C7">${r.date} 路 ${r.type} 路 ${r.done}/${r.total}椤逛换鍔?/div>
-      <div class="rr-ai">${r.pct>=80?'鉁?琛ㄧ幇浼樼锛岀户缁繚鎸侊紒':r.pct>=50?'馃搱 鏈夎繘姝ョ┖闂达紝涓嬫鍔犳补锛?:'馃挭 闇€瑕佹洿澶氫笓娉紝璇曡瘯寮€鍚暘鑼勯挓'}</div>
+      <div style="font-size:11px;color:#BDC3C7">${r.date} · ${r.type} · ${r.done}/${r.total}项任务</div>
+      <div class="rr-ai">${r.pct>=80?'✨ 表现优秀，继续保持！':r.pct>=50?'📈 有进步空间，下次加油！':'💪 需要更多专注，试试开启番茄钟'}</div>
     </div>
   `).join('');
 }
