@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>璇惧爞涓撴敞鍔涜嚜鎴戠鐞嗗姪鎵?/title>
+<style>
+:root {
+  --primary: #1A5276;
+  --primary-light: #2980B9;
+  --accent: #16A085;
+  --accent2: #E67E22;
+  --bg: #F5F7FA;
+  --card: #FFFFFF;
+  --text: #2C3E50;
+  --text2: #7F8C8D;
+  --text3: #BDC3C7;
+  --danger: #E74C3C;
+  --focus-bg: #1a1a2e;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--bg); color: var(--text); overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+#app { max-width: 440px; margin: 0 auto; min-height: 100vh; position: relative; padding-bottom: 80px; }
+
+/* ===== NAV ===== */
+.nav { position: sticky; top: 0; z-index: 99; background: rgba(26,82,118,0.95); backdrop-filter: blur(20px); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; }
+.nav-title { color: #fff; font-size: 17px; font-weight: 700; }
+.nav-sub { color: rgba(255,255,255,0.7); font-size: 12px; }
+
+/* ===== PAGE ===== */
+.page { display: none; animation: slideUp 0.28s ease; }
+.page.active { display: block; }
+@keyframes slideUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+/* ===== TODAY HEADER ===== */
+.today-header {
+  background: linear-gradient(135deg, #1A5276, #2980B9);
+  color: #fff; margin: 14px; border-radius: 16px; padding: 20px;
+}
+.today-date { font-size: 13px; opacity: 0.8; margin-bottom: 4px; }
+.today-dow { font-size: 24px; font-weight: 800; }
+.today-motd { font-size: 12px; opacity: 0.75; margin-top: 6px; background: rgba(255,255,255,0.12); display: inline-block; padding: 3px 12px; border-radius: 10px; }
+
+/* ===== COURSE CARD ===== */
+.course-card {
+  background: var(--card); border-radius: 14px; margin: 0 14px 12px; padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04); border-left: 5px solid var(--accent);
+  transition: transform 0.15s;
+}
+.course-card:active { transform: scale(0.98); }
+.course-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.course-name { font-size: 17px; font-weight: 700; }
+.course-time { font-size: 12px; color: var(--text2); }
+.course-type { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 4px; background: #EBF5FB; color: #2980B9; margin-bottom: 8px; }
+.course-tasks { margin-top: 6px; }
+.task-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 12px; background: #F8F9FA; border-radius: 8px;
+  margin-bottom: 4px; font-size: 13px;
+}
+.task-chip .tc-icon { font-size: 16px; }
+.task-chip.checked { background: #E8F8F5; color: #16A085; text-decoration: line-through; }
+.task-chip.checked .tc-icon { opacity: 0.5; }
+.course-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+.course-foot .ai-hint { font-size: 11px; color: var(--text3); }
+.start-btn {
+  background: var(--accent); color: #fff; border: none;
+  padding: 8px 20px; border-radius: 18px; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+
+/* ===== FOCUS MODE ===== */
+.focus-overlay { display: none; position: fixed; inset: 0; background: var(--focus-bg); z-index: 300; flex-direction: column; align-items: center; justify-content: center; color: #fff; }
+.focus-overlay.show { display: flex; }
+.focus-timer { font-size: 72px; font-weight: 200; font-family: 'SF Mono', 'Menlo', monospace; }
+.focus-label { font-size: 14px; opacity: 0.6; margin: 8px 0 24px; }
+.focus-tasks { width: 80%; max-width: 320px; }
+.ft-task { padding: 10px 14px; background: rgba(255,255,255,0.08); border-radius: 8px; margin-bottom: 6px; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.ft-task.done { opacity: 0.4; text-decoration: line-through; }
+.focus-actions { display: flex; gap: 12px; margin-top: 32px; }
+.focus-btn {
+  padding: 12px 28px; border-radius: 24px; border: none; font-size: 15px; font-weight: 600; cursor: pointer;
+}
+.focus-btn.end { background: var(--accent); color: #fff; }
+.focus-btn.mind { background: rgba(255,255,255,0.12); color: #fff; }
+.focus-btn.break { background: rgba(255,255,255,0.08); color: #fff; }
+
+/* ===== MINDFULNESS ===== */
+.mind-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 350; align-items: center; justify-content: center; }
+.mind-overlay.show { display: flex; }
+.mind-box { background: #fff; border-radius: 20px; padding: 28px; text-align: center; width: 85%; max-width: 340px; }
+.mind-circle { width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 16px; border: 4px solid #16A085; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #16A085; animation: breathe 4s ease-in-out infinite; }
+@keyframes breathe { 0%,100% { transform:scale(1); opacity:0.7; } 50% { transform:scale(1.15); opacity:1; } }
+.mind-text { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.mind-sub { font-size: 13px; color: #7F8C8D; margin-bottom: 20px; }
+.mind-timer { font-size: 28px; font-weight: 300; margin-bottom: 16px; }
+
+/* ===== REVIEW MODAL ===== */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 300; align-items: flex-end; justify-content: center; }
+.modal-overlay.show { display: flex; }
+.modal-sheet { background: #fff; border-radius: 20px 20px 0 0; padding: 24px 20px 32px; width: 100%; max-width: 440px; max-height: 85vh; overflow-y: auto; }
+.modal-sheet h3 { font-size: 18px; font-weight: 700; margin-bottom: 16px; display: flex; justify-content: space-between; }
+.modal-close { font-size: 24px; color: #BDC3C7; cursor: pointer; background: none; border: none; }
+
+/* ===== RECORDS ===== */
+.stat-cards { display: flex; gap: 10px; margin: 14px; }
+.stat-card { flex:1; background: var(--card); border-radius: 14px; padding: 16px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+.stat-card .sv { font-size: 28px; font-weight: 800; }
+.stat-card .sl { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.stat-card.primary .sv { color: var(--primary-light); }
+.stat-card.accent .sv { color: var(--accent); }
+.stat-card.warn .sv { color: var(--accent2); }
+
+.record-row { background: var(--card); border-radius: 12px; margin: 0 14px 10px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.record-row .rr-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.record-row .rr-name { font-weight: 700; font-size: 15px; }
+.record-row .rr-pct { font-size: 13px; font-weight: 600; }
+.record-row .rr-pct.good { color: var(--accent); }
+.record-row .rr-pct.mid { color: var(--accent2); }
+.record-row .rr-pct.low { color: var(--danger); }
+.record-row .rr-ai { font-size: 11px; color: var(--primary-light); font-style: italic; margin-top: 4px; padding: 6px 8px; background: #EBF5FB; border-radius: 6px; }
+
+/* ===== PROFILE ===== */
+.profile-card {
+  background: linear-gradient(135deg, #1A5276, #2C3E50);
+  border-radius: 18px; margin: 14px; padding: 24px 20px; text-align: center; color: #fff;
+}
+.pav { width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,0.15); margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 32px; }
+.pname { font-size: 18px; font-weight: 800; }
+.pinfo { font-size: 12px; opacity: 0.7; margin-top: 2px; }
+.pstats { display: flex; justify-content: center; gap: 24px; margin-top: 14px; }
+.ps { text-align: center; }
+.ps .psn { font-size: 22px; font-weight: 800; }
+.ps .psl { font-size: 11px; opacity: 0.7; }
+
+.menu-list { background: var(--card); border-radius: 16px; margin: 0 14px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+.menu-row { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid #F5F5F5; cursor: pointer; }
+.menu-row:last-child { border: none; }
+.menu-row .mr-icon { font-size: 20px; width: 28px; text-align: center; }
+.menu-row .mr-text { flex: 1; font-size: 15px; }
+.menu-row .mr-arrow { color: #D0D0D0; font-size: 18px; }
+
+.section-title { font-size: 12px; font-weight: 600; color: var(--text2); padding: 16px 14px 8px; text-transform: uppercase; letter-spacing: 1px; }
+
+/* ===== TOOLS ===== */
+.tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 14px 14px; }
+.tool-card { background: var(--card); border-radius: 12px; padding: 14px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.04); cursor: pointer; transition: transform 0.15s; }
+.tool-card:active { transform: scale(0.96); }
+.tool-icon { font-size: 28px; margin-bottom: 6px; }
+.tool-name { font-size: 14px; font-weight: 700; }
+.tool-desc { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+/* ===== TAB BAR ===== */
+.tab-bar {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 440px; background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(20px); display: flex; border-top: 1px solid #F0F0F0; z-index: 200;
+  padding: 5px 0 env(safe-area-inset-bottom, 8px);
+}
+.tab { flex: 1; text-align: center; padding: 6px 0; cursor: pointer; color: #B0B0B0; transition: all 0.2s; }
+.tab .tb-icon { font-size: 22px; display: block; margin-bottom: 2px; }
+.tab .tb-label { font-size: 10px; }
+.tab.active { color: var(--primary-light); }
+
+/* ===== FORM ===== */
+.fg { margin-bottom: 14px; }
+.fg label { display: block; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 4px; }
+.fi { width: 100%; padding: 10px 14px; border: 1.5px solid #E5E7EB; border-radius: 10px; font-size: 15px; outline: none; }
+.fi:focus { border-color: var(--primary-light); }
+
+/* ===== TOAST ===== */
+.toast { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); background: rgba(0,0,0,0.8); color: #fff; padding: 12px 24px; border-radius: 10px; font-size: 14px; z-index: 500; pointer-events: none; opacity: 0; transition: opacity 0.2s; }
+.toast.show { opacity: 1; }
+
+/* ===== RESPONSIVE ===== */
+@media (min-width: 440px) { #app { border-left: 1px solid #EEE; border-right: 1px solid #EEE; } }
+</style>
+</head>
+<body>
+
+<div id="app">
+
+<!-- ==================== 浠婃棩璇惧爞 ==================== -->
+<div class="page active" id="pg-today">
+  <div class="today-header">
+    <div class="today-date" id="todayDate"></div>
+    <div class="today-dow" id="todayDow"></div>
+    <div class="today-motd" id="todayMotd"></div>
+  </div>
+  <div id="courseList"></div>
+</div>
+
+<!-- ==================== 浠诲姟璁板綍 ==================== -->
+<div class="page" id="pg-records">
+  <div class="stat-cards">
+    <div class="stat-card primary"><div class="sv" id="statRate">82%</div><div class="sl">鏈懆瀹屾垚鐜?/div></div>
+    <div class="stat-card accent"><div class="sv" id="statFocus">12.5h</div><div class="sl">绱涓撴敞</div></div>
+    <div class="stat-card warn"><div class="sv" id="statStreak">5澶?/div><div class="sl">杩炵画鎵撳崱</div></div>
+  </div>
+  <div id="recordList"></div>
+</div>
+
+<!-- ==================== 鎴戠殑 ==================== -->
+<div class="page" id="pg-profile">
+  <div class="profile-card">
+    <div class="pav">馃摎</div>
+    <div class="pname" id="profileName">鍖诲鐢?/div>
+    <div class="pinfo" id="profileMajor">涓村簥鍖诲 路 澶т笁</div>
+    <div class="pstats">
+      <div class="ps"><div class="psn" id="pfFocus">48h</div><div class="psl">鎬讳笓娉ㄦ椂闀?/div></div>
+      <div class="ps"><div class="psn" id="pfTasks">156</div><div class="psl">瀹屾垚浠诲姟</div></div>
+      <div class="ps"><div class="psn" id="pfMind">23娆?/div><div class="psl">姝ｅ康缁冧範</div></div>
+    </div>
+  </div>
+  <div class="menu-list">
+    <div class="menu-row" onclick="toast('璇捐〃绠＄悊寮€鍙戜腑')"><span class="mr-icon">馃搮</span><span class="mr-text">璇捐〃绠＄悊</span><span class="mr-arrow">鈥?/span></div>
+    <div class="menu-row" onclick="toast('鎻愰啋璁剧疆寮€鍙戜腑')"><span class="mr-icon">馃敂</span><span class="mr-text">涓撴敞鎻愰啋璁剧疆</span><span class="mr-arrow">鈥?/span></div>
+    <div class="menu-row" onclick="toast('鐩爣璁惧畾寮€鍙戜腑')"><span class="mr-icon">馃幆</span><span class="mr-text">瀛︿範鐩爣璁惧畾</span><span class="mr-arrow">鈥?/span></div>
+    <div class="menu-row" onclick="toast('AI鍋忓ソ寮€鍙戜腑')"><span class="mr-icon">馃</span><span class="mr-text">AI鎺ㄨ崘鍋忓ソ</span><span class="mr-arrow">鈥?/span></div>
+  </div>
+  <div class="section-title">瀛︿範宸ュ叿 路 蹇嵎鍏ュ彛</div>
+  <div class="tool-grid">
+    <div class="tool-card" onclick="toast('UpToDate 璺宠浆涓€?)"><div class="tool-icon">馃敩</div><div class="tool-name">UpToDate</div><div class="tool-desc">涓村簥椤鹃棶</div></div>
+    <div class="tool-card" onclick="toast('PubMed 璺宠浆涓€?)"><div class="tool-icon">馃摉</div><div class="tool-name">PubMed</div><div class="tool-desc">鏂囩尞妫€绱?/div></div>
+    <div class="tool-card" onclick="toast('CompleteAnatomy 璺宠浆涓€?)"><div class="tool-icon">馃Υ</div><div class="tool-name">3D瑙ｅ墫</div><div class="tool-desc">CompleteAnatomy</div></div>
+    <div class="tool-card" onclick="toast('鍖诲棰樺簱璺宠浆涓€?)"><div class="tool-icon">馃摑</div><div class="tool-name">鍖诲棰樺簱</div><div class="tool-desc">鍖昏€冨府</div></div>
+  </div>
+</div>
+
+</div>
+
+<!-- ==================== FOCUS MODE OVERLAY ==================== -->
+<div class="focus-overlay" id="focusOverlay">
+  <div class="focus-timer" id="focusTimer">25:00</div>
+  <div class="focus-label" id="focusLabel">涓撴敞涓?路 绗?杞?/div>
+  <div class="focus-tasks" id="focusTasks"></div>
+  <div class="focus-actions">
+    <button class="focus-btn mind" onclick="startMindfulness()">馃 姝ｅ康</button>
+    <button class="focus-btn break" id="breakBtn" style="display:none" onclick="startBreak()">鈽?浼戞伅</button>
+    <button class="focus-btn end" onclick="endFocus()">鉁?缁撴潫</button>
+  </div>
+</div>
+
+<!-- ==================== MINDFULNESS OVERLAY ==================== -->
+<div class="mind-overlay" id="mindOverlay">
+  <div class="mind-box">
+    <div class="mind-circle" id="mindCircle">鍚告皵</div>
+    <div class="mind-text">姝ｅ康鍛煎惛</div>
+    <div class="mind-sub">璺熼殢鍦嗗湀鐨勮妭濂忥紝涓撴敞浣犵殑鍛煎惛</div>
+    <div class="mind-timer" id="mindTimer">2:00</div>
+    <button class="focus-btn end" onclick="endMindfulness()" style="background:#16A085;color:#fff">瀹屾垚缁冧範</button>
+  </div>
+</div>
+
+<!-- ==================== REVIEW MODAL ==================== -->
+<div class="modal-overlay" id="reviewModal">
+  <div class="modal-sheet">
+    <h3>馃搵 璇惧悗澶嶇洏 <button class="modal-close" onclick="closeReview()">脳</button></h3>
+    <div id="reviewContent"></div>
+  </div>
+</div>
+
+<!-- ==================== TOAST ==================== -->
+<div class="toast" id="toast"></div>
+
+<!-- ==================== TAB BAR ==================== -->
+<div class="tab-bar">
+  <div class="tab active" data-pg="today"><span class="tb-icon">馃搵</span><span class="tb-label">浠婃棩璇惧爞</span></div>
+  <div class="tab" data-pg="records"><span class="tb-icon">馃搳</span><span class="tb-label">浠诲姟璁板綍</span></div>
+  <div class="tab" data-pg="profile"><span class="tb-icon">馃懁</span><span class="tb-label">鎴戠殑</span></div>
+</div>
+
+<script>
+// ===== DATA =====
+const SCHEDULE = [
+  { id:1, name:'鐢熺悊瀛?, time:'08:00-09:40', type:'涓撲笟璇撅紙鐞嗚锛?, room:'鏁欏妤?01', tasks:[
+    { text:'璁板綍3涓牳蹇冩蹇?, ai:'璇ヨ绋嬪垎蹇冪巼杈冮珮锛屽缓璁噸鐐瑰叧娉?, done:false },
+    { text:'鎻愬嚭1涓鍫傜枒闂?, ai:'涓诲姩鎻愰棶鍙姞娣辫蹇?, done:false },
+    { text:'鐢ㄦ€濈淮瀵煎浘鏁寸悊妗嗘灦', ai:'鎺ㄨ崘浣跨敤 XMind 鎴栨墜缁?, done:false }
+  ], color:'#2980B9' },
+  { id:2, name:'鍖诲鑻辫', time:'10:00-11:40', type:'鑻辫璇?, room:'鏁欏妤?05', tasks:[
+    { text:'璁板綍5涓柊鍗曡瘝', ai:'绉疮涓撲笟璇嶆眹', done:false },
+    { text:'鍑嗗璇惧爞鍙戣█', ai:'璇█杈撳嚭淇冭繘鎺屾彙', done:false },
+    { text:'鏌ヨ瘝鍚庣珛鍗宠褰?, ai:'鍙婃椂鏁寸悊閬垮厤閬楀繕', done:false }
+  ], color:'#16A085' },
+  { id:3, name:'鎬濇斂璇?, time:'14:00-15:40', type:'鍏€夎', room:'缁煎悎妤?02', tasks:[
+    { text:'璁板綍1涓紩鍙戞€濊€冪殑瑙傜偣', ai:'鍩瑰吇鎵瑰垽鎬ф€濈淮', done:false },
+    { text:'瀹屾垚20涓崟璇嶈儗璇?, ai:'鍒╃敤纰庣墖鏃堕棿绉疮', done:false },
+    { text:'鏁寸悊寰呭姙娓呭崟', ai:'娓呯悊澶ц剳閲婃斁涓撴敞鍔?, done:false }
+  ], color:'#E67E22' },
+];
+
+let RECORDS = JSON.parse(localStorage.getItem('focus_records') || '[]');
+let TASKS_DONE = JSON.parse(localStorage.getItem('focus_tasks_done') || '0');
+let FOCUS_MINUTES = JSON.parse(localStorage.getItem('focus_minutes') || '0');
+let currentCourse = null;
+let focusInterval = null, focusSec = 25*60, focusRound = 1;
+let mindInterval = null, mindSec = 120;
+
+// ===== INIT =====
+function initToday() {
+  const now = new Date();
+  const days = ['鏃?,'涓€','浜?,'涓?,'鍥?,'浜?,'鍏?];
+  document.getElementById('todayDate').textContent = now.getFullYear() + '骞? + (now.getMonth()+1) + '鏈? + now.getDate() + '鏃?;
+  document.getElementById('todayDow').textContent = '鏄熸湡' + days[now.getDay()];
+  const motds = [
+    '馃搶 涓撴敞鐨勪綘锛屾瘮鎵嬫満閲岀殑浠讳綍鍐呭閮界簿褰?,
+    '馃搶 姣忚妭璇捐瀹氱洰鏍囷紝鏄鑷繁鐨勬壙璇?,
+    '馃搶 浣犱笉鏄湪瀵规姉鎵嬫満锛屾槸鍦ㄥ畧鎶よ嚜宸辩殑鏃堕棿',
+    '馃搶 姝ｅ康涓€鍒嗛挓锛岃儨杩囪蛋绁炰竴灏忔椂',
+    '馃搶 浠婂ぉ鐨勪换鍔″喅瀹氭槑澶╃殑浣?
+  ];
+  document.getElementById('todayMotd').textContent = motds[now.getDay() % motds.length];
+  renderCourses();
+  updateRecords();
+}
+
+function renderCourses() {
+  const list = document.getElementById('courseList');
+  list.innerHTML = SCHEDULE.map(c => {
+    const doneCount = c.tasks.filter(t => t.done).length;
+    return `<div class="course-card" style="border-left-color:${c.color}">
+      <div class="course-top">
+        <div>
+          <div class="course-name">${c.name}</div>
+          <div class="course-time">馃晲 ${c.time} 路 馃搷 ${c.room}</div>
+        </div>
+        <span class="course-type">${c.type}</span>
+      </div>
+      <div class="course-tasks">
+        ${c.tasks.map((t, i) => `<div class="task-chip ${t.done?'checked':''}" onclick="toggleTask(${c.id},${i})">
+          <span class="tc-icon">${t.done?'鉁?:'鈽?}</span>
+          <span>${t.text}</span>
+        </div>`).join('')}
+      </div>
+      <div class="course-foot">
+        <span class="ai-hint">馃 AI: ${doneCount===c.tasks.length?'鍏ㄩ儴瀹屾垚锛屽お妫掍簡锛?:c.tasks[0].ai}</span>
+        <button class="start-btn" onclick="startCourse(${c.id})">鈻?寮€濮嬫湰鑺傝</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleTask(courseId, taskIdx) {
+  const c = SCHEDULE.find(x => x.id === courseId);
+  c.tasks[taskIdx].done = !c.tasks[taskIdx].done;
+  renderCourses();
+  updateRecords();
+}
+
+// ===== FOCUS MODE =====
+function startCourse(courseId) {
+  currentCourse = SCHEDULE.find(x => x.id === courseId);
+  focusSec = 25*60; focusRound = 1;
+  document.getElementById('focusTimer').textContent = '25:00';
+  document.getElementById('focusLabel').textContent = '涓撴敞涓?路 绗? + focusRound + '杞?;
+  document.getElementById('breakBtn').style.display = 'none';
+
+  const ft = document.getElementById('focusTasks');
+  ft.innerHTML = currentCourse.tasks.map((t, i) =>
+    `<div class="ft-task" onclick="toggleFocusTask(${i})">${t.done?'鈼?:'鈼?} ${t.text}</div>`
+  ).join('');
+
+  document.getElementById('focusOverlay').classList.add('show');
+  startFocusTimer();
+}
+
+function toggleFocusTask(i) {
+  currentCourse.tasks[i].done = !currentCourse.tasks[i].done;
+  const ft = document.getElementById('focusTasks');
+  ft.innerHTML = currentCourse.tasks.map((t, i2) =>
+    `<div class="ft-task ${t.done?'done':''}" onclick="toggleFocusTask(${i2})">${t.done?'鈼?:'鈼?} ${t.text}</div>`
+  ).join('');
+}
+
+function startFocusTimer() {
+  if (focusInterval) clearInterval(focusInterval);
+  focusInterval = setInterval(() => {
+    focusSec--;
+    const m = Math.floor(focusSec/60), s = focusSec%60;
+    document.getElementById('focusTimer').textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    if (focusSec <= 0) {
+      clearInterval(focusInterval);
+      focusRound++;
+      document.getElementById('focusLabel').textContent = '涓撴敞涓?路 绗? + focusRound + '杞?;
+      document.getElementById('breakBtn').style.display = 'inline-block';
+      document.getElementById('focusTimer').textContent = '25:00';
+      toast('馃帀 涓€杞笓娉ㄥ畬鎴愶紒浼戞伅涓€涓嬪惂');
+    }
+  }, 1000);
+}
+
+function startBreak() {
+  if (focusInterval) clearInterval(focusInterval);
+  let breakSec = 120;
+  document.getElementById('focusLabel').textContent = '浼戞伅涓?鈽?;
+  document.getElementById('breakBtn').style.display = 'none';
+  focusInterval = setInterval(() => {
+    breakSec--;
+    const m = Math.floor(breakSec/60), s = breakSec%60;
+    document.getElementById('focusTimer').textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    if (breakSec <= 0) {
+      clearInterval(focusInterval);
+      focusSec = 25*60;
+      document.getElementById('focusTimer').textContent = '25:00';
+      document.getElementById('focusLabel').textContent = '涓撴敞涓?路 绗? + focusRound + '杞?;
+      startFocusTimer();
+    }
+  }, 1000);
+}
+
+function endFocus() {
+  if (focusInterval) clearInterval(focusInterval);
+  document.getElementById('focusOverlay').classList.remove('show');
+  const elapsed = (25*60 - focusSec) + (focusRound-1)*25*60;
+  const mins = Math.round(elapsed/60);
+  FOCUS_MINUTES += mins;
+  localStorage.setItem('focus_minutes', JSON.stringify(FOCUS_MINUTES));
+  renderCourses();
+  updateRecords();
+  showReview(currentCourse);
+  currentCourse = null;
+}
+
+// ===== MINDFULNESS =====
+function startMindfulness() {
+  document.getElementById('mindOverlay').classList.add('show');
+  mindSec = 120;
+  document.getElementById('mindTimer').textContent = '2:00';
+  if (mindInterval) clearInterval(mindInterval);
+  const phases = ['鍚告皵','灞忔伅','鍛兼皵','灞忔伅'];
+  let pi = 0;
+  mindInterval = setInterval(() => {
+    mindSec--;
+    const m = Math.floor(mindSec/60), s = mindSec%60;
+    document.getElementById('mindTimer').textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    if (mindSec % 4 === 0) { pi = (pi+1)%4; document.getElementById('mindCircle').textContent = phases[pi]; }
+    if (mindSec <= 0) { clearInterval(mindInterval); endMindfulness(); }
+  }, 1000);
+}
+
+function endMindfulness() {
+  if (mindInterval) clearInterval(mindInterval);
+  document.getElementById('mindOverlay').classList.remove('show');
+  toast('馃 姝ｅ康缁冧範瀹屾垚锛?);
+}
+
+// ===== REVIEW =====
+function showReview(course) {
+  const done = course.tasks.filter(t => t.done).length;
+  const total = course.tasks.length;
+  const pct = Math.round(done/total*100);
+  document.getElementById('reviewContent').innerHTML = `
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:48px;margin-bottom:4px">${pct>=80?'馃帀':pct>=50?'馃憤':'馃挭'}</div>
+      <div style="font-weight:800;font-size:20px">${course.name} 澶嶇洏</div>
+      <div style="font-size:14px;color:#7F8C8D;margin-top:4px">浠诲姟瀹屾垚鐜?<b style="color:${pct>=80?'#16A085':'#E67E22'}">${pct}%</b></div>
+    </div>
+    <div class="fg"><label>宸插畬鎴?/label>
+      ${course.tasks.filter(t => t.done).map(t => '<div class="task-chip checked"><span class="tc-icon">鉁?/span>'+t.text+'</div>').join('') || '<div style="font-size:13px;color:#999;padding:8px">鏃犲畬鎴愰」</div>'}
+    </div>
+    <div class="fg"><label>鏈畬鎴?/label>
+      ${course.tasks.filter(t => !t.done).map(t => '<div class="task-chip"><span class="tc-icon">猬?/span>'+t.text+'</div>').join('') || '<div style="font-size:13px;color:#999;padding:8px">鍏ㄩ儴瀹屾垚锛?/div>'}
+    </div>
+    <div style="background:#EBF5FB;border-radius:10px;padding:12px;font-size:13px;color:#2980B9;margin-bottom:12px">
+      馃 AI 鍙嶉锛?{pct>=80?'浠婂ぉ琛ㄧ幇闈炲父妫掞紝缁х画淇濇寔杩欎釜鑺傚锛?:'浠婂ぉ杩樻湁鎻愬崌绌洪棿锛屼笅娆℃彁鍓嶈瀹氭槑纭洰鏍囦細鏈夊府鍔┿€?}
+    </div>
+    <button class="start-btn" style="width:100%;padding:12px" onclick="closeReview();toast('璁板綍宸蹭繚瀛?鉁?)">淇濆瓨骞跺叧闂?/button>
+  `;
+  document.getElementById('reviewModal').classList.add('show');
+
+  RECORDS.push({
+    course: course.name, type: course.type,
+    date: new Date().toLocaleDateString('zh-CN'),
+    done, total, pct
+  });
+  localStorage.setItem('focus_records', JSON.stringify(RECORDS.slice(-50)));
+  TASKS_DONE += done;
+  localStorage.setItem('focus_tasks_done', JSON.stringify(TASKS_DONE));
+}
+
+function closeReview() {
+  document.getElementById('reviewModal').classList.remove('show');
+  updateRecords();
+}
+
+// ===== RECORDS =====
+function updateRecords() {
+  document.getElementById('statRate').textContent = RECORDS.length ? Math.round(RECORDS.reduce((a,r)=>a+r.pct,0)/RECORDS.length) + '%' : '--';
+  document.getElementById('statFocus').textContent = (FOCUS_MINUTES/60).toFixed(1)+'h';
+  document.getElementById('statStreak').textContent = RECORDS.length + '娆?;
+  document.getElementById('pfFocus').textContent = (FOCUS_MINUTES/60).toFixed(0)+'h';
+  document.getElementById('pfTasks').textContent = TASKS_DONE;
+  document.getElementById('pfMind').textContent = Math.floor(FOCUS_MINUTES/5) + '娆?;
+
+  const rl = document.getElementById('recordList');
+  if (!rl) return;
+  rl.innerHTML = RECORDS.slice(-20).reverse().map(r => `
+    <div class="record-row">
+      <div class="rr-top">
+        <span class="rr-name">${r.course}</span>
+        <span class="rr-pct ${r.pct>=80?'good':r.pct>=50?'mid':'low'}">${r.pct}%</span>
+      </div>
+      <div style="font-size:11px;color:#BDC3C7">${r.date} 路 ${r.type} 路 ${r.done}/${r.total}椤逛换鍔?/div>
+      <div class="rr-ai">${r.pct>=80?'鉁?琛ㄧ幇浼樼锛岀户缁繚鎸侊紒':r.pct>=50?'馃搱 鏈夎繘姝ョ┖闂达紝涓嬫鍔犳补锛?:'馃挭 闇€瑕佹洿澶氫笓娉紝璇曡瘯寮€鍚暘鑼勯挓'}</div>
+    </div>
+  `).join('');
+}
+
+// ===== TAB NAV =====
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', function() {
+    const pg = this.dataset.pg;
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    this.classList.add('active');
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('pg-'+pg).classList.add('active');
+    if (pg === 'records') updateRecords();
+  });
+});
+
+// ===== TOAST =====
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1600);
+}
+
+// ===== CLOSE MODALS =====
+document.getElementById('reviewModal').addEventListener('click', function(e) { if(e.target===this) closeReview(); });
+
+// ===== INIT =====
+initToday();
+updateRecords();
+</script>
+</body>
+</html>
