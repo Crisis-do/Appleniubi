@@ -299,8 +299,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei
       </div>
       <div class="form-group"><label>课后任务（每行一个）</label><textarea class="ta-large" id="mTasks" placeholder="记录3个核心概念&#10;提出1个课堂疑问" style="min-height:80px"></textarea></div>
       <input type="hidden" id="mEditId" value="">
-      <button class="btn-primary" onclick="window.saveCourse()">💾 保存课程</button>
+      <div style="display:flex;gap:10px">
+        <button class="btn-primary" style="flex:1" onclick="window.saveCourse(false)">💾 保存并关闭</button>
+        <button class="btn-primary" style="flex:1;background:var(--accent)" onclick="window.saveCourse(true)">＋ 保存并继续添加</button>
+      </div>
       <button class="btn-outline" id="btnDeleteCourse" style="display:none" onclick="window.deleteCourse()">🗑 删除此课程</button>
+      <div style="text-align:center;margin-top:8px;font-size:12px;color:var(--text3)" id="batchCounter"></div>
     </div>
     <div id="tab-text" class="import-panel" style="display:none">
       <div class="hint-box">💡 格式示例：<br>周一<br>第1-2节 生理学 教学楼301 张老师<br>第3-4节 医学英语 教学楼205 李老师<br><br>或：生理学 周一 1-2节 教学楼301</div>
@@ -561,6 +565,21 @@ window.openSchedule=function(){
 window.goProfile=function(){document.getElementById('page-schedule').classList.remove('active');document.getElementById('page-profile').classList.add('active');document.getElementById('mainTabBar').style.display='flex';updateAllStats();};
 window.changeWeek=function(delta){currentWeek+=delta;if(currentWeek<1)currentWeek=1;if(currentWeek>TOTAL_WEEKS)currentWeek=TOTAL_WEEKS;renderScheduleGrid();};
 
+// Quick-add from empty grid cell
+window.quickAdd=function(day,period){
+  batchCount=0;document.getElementById('batchCounter').textContent='';
+  document.getElementById('importModal').classList.add('show');
+  document.getElementById('mEditId').value='';document.getElementById('btnDeleteCourse').style.display='none';
+  buildPeriodSelects();buildColorPicker();
+  document.getElementById('mDay').value=String(day);
+  document.getElementById('mStartPeriod').value=String(period);
+  document.getElementById('mEndPeriod').value=String(Math.min(period+1,MAX_PERIOD));
+  document.getElementById('mName').value='';document.getElementById('mRoom').value='';
+  document.getElementById('mTeacher').value='';document.getElementById('mWeeks').value='';
+  document.getElementById('mTasks').value='';document.getElementById('mName').focus();
+  switchImportTab('manual');
+};
+
 function renderScheduleGrid(){
   document.getElementById('weekLabel').textContent='第'+currentWeek+'周';
   var today=new Date(),todayDay=today.getDay(),thisPeriod=getCurrentPeriod();
@@ -606,8 +625,8 @@ function renderScheduleGrid(){
         html+='</div></div>';
         rendered[d][course.id]=true;
       } else if(!course){
-        // Empty cell
-        html+='<div class="sch-cell'+cls+'" style="grid-column:'+(d+1)+'"></div>';
+        // Empty cell - clickable to add course
+        html+='<div class="sch-cell'+cls+'" style="grid-column:'+(d+1)+';cursor:pointer" onclick="window.quickAdd('+d+','+p+')"></div>';
       }
       // If course is already rendered (second+ period), skip
     }
@@ -654,7 +673,7 @@ window.deleteFromDetail=function(cid){if(!confirm('确定删除这门课程？')
 
 // ====== IMPORT MODAL ======
 window.openImportModal=function(){
-  document.getElementById('importModal').classList.add('show');document.getElementById('mEditId').value='';
+  batchCount=0;document.getElementById('batchCounter').textContent='';document.getElementById('importModal').classList.add('show');document.getElementById('mEditId').value='';
   document.getElementById('btnDeleteCourse').style.display='none';clearForm();switchImportTab('manual');buildPeriodSelects();buildColorPicker();
 };
 window.closeImport=function(){document.getElementById('importModal').classList.remove('show');};
@@ -718,7 +737,9 @@ window.editCourse=function(cid){
   document.getElementById('importModal').classList.add('show');switchImportTab('manual');
 };
 
-window.saveCourse=function(){
+var batchCount=0; // 连续添加计数
+
+window.saveCourse=function(keepOpen){
   var name=document.getElementById('mName').value.trim();if(!name){window.showToast('请输入课程名称');return;}
   var editId=document.getElementById('mEditId').value;
   var startP=parseInt(document.getElementById('mStartPeriod').value),endP=parseInt(document.getElementById('mEndPeriod').value);
@@ -733,7 +754,20 @@ window.saveCourse=function(){
   };
   if(editId){for(var i=0;i<schedule.length;i++){if(schedule[i].id===editId){schedule[i]=courseObj;break;}}}
   else{schedule.push(courseObj);}
-  saveAll();window.closeImport();renderScheduleGrid();renderTodayCourses();updateAllStats();window.showToast('✅ 已保存');
+  saveAll();
+  if(keepOpen){
+    // Keep modal open, clear course-specific fields, keep day/weeks/type/color
+    batchCount++;
+    document.getElementById('batchCounter').textContent='本次已添加 '+batchCount+' 门课';
+    document.getElementById('mName').value='';document.getElementById('mEditId').value='';
+    document.getElementById('mStartPeriod').value='1';document.getElementById('mEndPeriod').value='2';
+    document.getElementById('mStartTime').value='';document.getElementById('mEndTime').value='';
+    document.getElementById('mRoom').value='';document.getElementById('mTeacher').value='';document.getElementById('mTasks').value='';
+    document.getElementById('btnDeleteCourse').style.display='none';document.getElementById('mName').focus();
+    renderScheduleGrid();renderTodayCourses();updateAllStats();
+  }else{
+    batchCount=0;document.getElementById('batchCounter').textContent='';window.closeImport();renderScheduleGrid();renderTodayCourses();updateAllStats();window.showToast('✅ 已保存');
+  }
 };
 
 window.deleteCourse=function(){
