@@ -8,948 +8,916 @@
 <title>课堂专注力自我管理助手</title>
 <style>
 :root {
-  --primary: #1A5276;
-  --primary-light: #2980B9;
-  --accent: #16A085;
-  --accent2: #E67E22;
-  --bg: #F5F7FA;
-  --card: #FFFFFF;
-  --text: #2C3E50;
-  --text2: #7F8C8D;
-  --text3: #BDC3C7;
-  --danger: #E74C3C;
-  --focus-bg: #0f0f1a;
-  --radius: 15px;
+  --primary: #1A5276; --primary-light: #2980B9; --accent: #16A085;
+  --accent2: #E67E22; --bg: #F5F7FA; --card: #FFFFFF; --text: #2C3E50;
+  --text2: #7F8C8D; --text3: #BDC3C7; --danger: #E74C3C;
+  --focus-bg: #0f0f1a; --radius: 15px;
 }
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+#app{max-width:440px;margin:0 auto;min-height:100vh;position:relative;padding-bottom:80px}
+@media(min-width:440px){#app{border-left:1px solid #e8e8e8;border-right:1px solid #e8e8e8}}
+.topbar{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#1A5276,#1a3a50);backdrop-filter:blur(20px);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;color:#fff}
+.topbar-left .title{font-size:17px;font-weight:700;letter-spacing:.3px}
+.topbar-left .subtitle{font-size:11px;opacity:.65;margin-top:1px}
+.topbar-right{font-size:28px;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.page{display:none;animation:pageIn .3s ease}
+.page.active{display:block}
+@keyframes pageIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.today-banner{background:linear-gradient(135deg,#1A5276,#2980B9);color:#fff;margin:14px;border-radius:var(--radius);padding:22px 20px;position:relative;overflow:hidden}
+.today-banner::after{content:'';position:absolute;right:-20px;top:-20px;width:120px;height:120px;background:rgba(255,255,255,.06);border-radius:50%}
+.today-date{font-size:13px;opacity:.8;margin-bottom:6px;position:relative;z-index:1}
+.today-dow{font-size:26px;font-weight:800;position:relative;z-index:1}
+.today-motd{font-size:12px;opacity:.8;margin-top:10px;background:rgba(255,255,255,.12);display:inline-block;padding:4px 14px;border-radius:20px;position:relative;z-index:1}
+.course-card{background:var(--card);border-radius:var(--radius);margin:0 14px 12px;padding:18px;box-shadow:0 2px 12px rgba(0,0,0,.05);border-left:5px solid var(--accent);transition:all .2s}
+.course-card:active{transform:scale(.98)}
+.course-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.course-name{font-size:18px;font-weight:700}
+.course-meta{font-size:12px;color:var(--text2);margin-top:3px}
+.course-badge{font-size:10px;padding:3px 10px;border-radius:12px;font-weight:600}
+.badge-major{background:#EBF5FB;color:#2980B9}
+.badge-english{background:#E8F8F5;color:#16A085}
+.badge-elective{background:#FEF5E7;color:#E67E22}
+.badge-lab{background:#F4ECF7;color:#8E44AD}
+.badge-other{background:#F2F3F4;color:#7F8C8D}
+.task-list{margin:8px 0}
+.task-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#F8F9FA;border-radius:10px;margin-bottom:6px;font-size:14px;cursor:pointer;transition:all .2s}
+.task-item:active{background:#eef1f4}
+.task-item .check{width:22px;height:22px;border-radius:50%;border:2px solid #d0d5dd;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;transition:all .3s}
+.task-item.done{background:#E8F8F5}
+.task-item.done .check{background:#16A085;border-color:#16A085;color:#fff}
+.task-item.done .task-text{text-decoration:line-through;color:#16A085}
+.task-text{flex:1}
+.course-footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.ai-hint{font-size:11px;color:var(--primary-light);background:#EBF5FB;padding:5px 12px;border-radius:8px;max-width:60%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn-start{background:var(--accent);color:#fff;border:none;padding:10px 24px;border-radius:20px;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 3px 10px rgba(22,160,133,.3);transition:all .2s}
+.btn-start:active{transform:scale(.95);opacity:.9}
+.no-courses{text-align:center;padding:40px 20px;color:var(--text3)}
+.no-courses .nc-icon{font-size:48px;margin-bottom:12px}
+.no-courses .nc-text{font-size:14px;margin-bottom:4px}
+.no-courses .nc-sub{font-size:12px}
+.focus-overlay{display:flex;flex-direction:column;align-items:center;justify-content:center;position:fixed;inset:0;background:var(--focus-bg);z-index:300;color:#fff;opacity:0;pointer-events:none;transition:opacity .35s}
+.focus-overlay.show{opacity:1;pointer-events:auto}
+.focus-timer{font-size:80px;font-weight:200;font-family:'SF Mono',Menlo,Consolas,monospace;letter-spacing:2px}
+.focus-label{font-size:15px;opacity:.55;margin:10px 0 28px}
+.focus-rounds{display:flex;gap:8px;margin-bottom:28px}
+.round-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.2);transition:all .3s}
+.round-dot.done{background:var(--accent)}
+.round-dot.current{background:#fff;box-shadow:0 0 12px rgba(255,255,255,.4)}
+.focus-task-list{width:80%;max-width:320px;margin-bottom:32px}
+.ft-task{padding:12px 16px;background:rgba(255,255,255,.06);border-radius:10px;margin-bottom:8px;font-size:14px;display:flex;align-items:center;gap:10px;cursor:pointer;border:1px solid rgba(255,255,255,.05)}
+.ft-task:active{background:rgba(255,255,255,.12)}
+.ft-task.done{opacity:.35;text-decoration:line-through}
+.ft-dot{width:8px;height:8px;border-radius:50%;border:1.5px solid rgba(255,255,255,.5);flex-shrink:0}
+.ft-task.done .ft-dot{background:var(--accent);border-color:var(--accent)}
+.focus-actions{display:flex;gap:14px}
+.btn-focus{padding:13px 30px;border-radius:25px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-focus:active{transform:scale(.94)}
+.btn-end{background:var(--accent);color:#fff;box-shadow:0 4px 15px rgba(22,160,133,.4)}
+.btn-mind{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.15)}
+.btn-break{background:rgba(255,255,255,.08);color:#fff}
+.completion-toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:rgba(22,160,133,.95);color:#fff;padding:14px 28px;border-radius:30px;font-size:14px;font-weight:600;z-index:400;opacity:0;pointer-events:none;transition:opacity .3s;box-shadow:0 8px 30px rgba(22,160,133,.3)}
+.completion-toast.show{opacity:1}
+.mind-overlay{display:flex;align-items:center;justify-content:center;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:350;backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .3s}
+.mind-overlay.show{opacity:1;pointer-events:auto}
+.mind-card{background:#fff;border-radius:24px;padding:32px 28px;text-align:center;width:85%;max-width:340px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.mind-circle-wrap{position:relative;width:110px;height:110px;margin:0 auto 20px}
+.mind-circle{width:110px;height:110px;border-radius:50%;border:4px solid #16A085;display:flex;align-items:center;justify-content:center;font-size:16px;color:#16A085;font-weight:700;animation:breathe 4s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scale(1);opacity:.7;border-color:#16A085}50%{transform:scale(1.15);opacity:1;border-color:#1abc9c}}
+.mind-title{font-size:20px;font-weight:700;margin-bottom:6px}
+.mind-desc{font-size:13px;color:#7F8C8D;margin-bottom:22px;line-height:1.5}
+.mind-timer{font-size:32px;font-weight:300;margin-bottom:20px;font-family:'SF Mono',Menlo,monospace}
+.btn-mind-done{background:var(--accent);color:#fff;border:none;padding:12px 32px;border-radius:25px;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 15px rgba(22,160,133,.3);transition:all .2s}
+.btn-mind-done:active{transform:scale(.95)}
+.modal-overlay{display:flex;align-items:flex-end;justify-content:center;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:310;opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-overlay.show{opacity:1;pointer-events:auto}
+.modal-sheet{background:#fff;border-radius:22px 22px 0 0;padding:26px 22px 36px;width:100%;max-width:440px;max-height:80vh;overflow-y:auto;box-shadow:0 -10px 40px rgba(0,0,0,.1)}
+.modal-sheet h3{font-size:19px;font-weight:700;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center}
+.modal-close{font-size:28px;color:#ccc;background:none;border:none;cursor:pointer;padding:0 4px;line-height:1}
+.review-score{text-align:center;margin-bottom:20px}
+.review-emoji{font-size:52px;margin-bottom:6px}
+.review-pct{font-size:22px;font-weight:800}
+.review-pct.great{color:#16A085}.review-pct.good{color:#2980B9}.review-pct.ok{color:#E67E22}
+.review-section{margin-bottom:16px}
+.review-section label{font-size:13px;font-weight:600;color:#555;display:block;margin-bottom:8px}
+.stat-row{display:flex;gap:10px;margin:14px}
+.stat-card{flex:1;background:var(--card);border-radius:var(--radius);padding:18px 14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.stat-value{font-size:30px;font-weight:800}
+.stat-label{font-size:11px;color:var(--text2);margin-top:4px}
+.stat-card.c1 .stat-value{color:var(--primary-light)}
+.stat-card.c2 .stat-value{color:var(--accent)}
+.stat-card.c3 .stat-value{color:var(--accent2)}
+.record-item{background:var(--card);border-radius:12px;margin:0 14px 10px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.03)}
+.record-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.record-name{font-weight:700;font-size:15px}
+.record-pct{font-size:15px;font-weight:700;padding:4px 10px;border-radius:8px}
+.record-pct.great{color:#16A085;background:#E8F8F5}
+.record-pct.good{color:#2980B9;background:#EBF5FB}
+.record-pct.ok{color:#E67E22;background:#FEF5E7}
+.record-meta{font-size:11px;color:#BDC3C7}
+.record-ai{font-size:12px;color:var(--primary-light);font-style:italic;margin-top:8px;padding:8px 12px;background:#F5F9FC;border-radius:8px}
+.empty-state{text-align:center;padding:50px 20px;color:#BDC3C7}
+.empty-icon{font-size:48px;margin-bottom:12px}
+.empty-text{font-size:14px}
+.profile-card{background:linear-gradient(135deg,#1A5276,#1a3a50);border-radius:18px;margin:14px;padding:28px 20px;text-align:center;color:#fff;box-shadow:0 8px 25px rgba(26,82,118,.2)}
+.profile-avatar{width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.15);margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:36px}
+.profile-name{font-size:20px;font-weight:800}
+.profile-major{font-size:13px;opacity:.7;margin-top:4px}
+.profile-stats{display:flex;justify-content:center;gap:28px;margin-top:18px}
+.pstat{text-align:center}.pstat-num{font-size:24px;font-weight:800}.pstat-label{font-size:11px;opacity:.65;margin-top:2px}
+.menu-section{background:var(--card);border-radius:16px;margin:0 14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.menu-item{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid #F5F5F5;cursor:pointer;transition:background .15s}
+.menu-item:last-child{border:none}.menu-item:active{background:#f8f9fb}
+.menu-icon{font-size:22px;width:30px;text-align:center}
+.menu-text{flex:1;font-size:15px}.menu-arrow{color:#d0d0d0;font-size:20px}
+.section-label{font-size:11px;font-weight:600;color:var(--text2);padding:18px 14px 10px;text-transform:uppercase;letter-spacing:1.5px}
+.tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 14px 14px}
+.tool-card{background:var(--card);border-radius:13px;padding:18px 14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.04);cursor:pointer;transition:all .2s;border:1px solid transparent}
+.tool-card:active{transform:scale(.96);border-color:#e0e0e0}
+.tool-icon{font-size:30px;margin-bottom:8px}
+.tool-name{font-size:14px;font-weight:700}
+.tool-desc{font-size:11px;color:var(--text3);margin-top:3px}
+.tab-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:440px;background:rgba(255,255,255,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;border-top:1px solid #f0f0f0;z-index:200;padding:6px 0 max(8px,env(safe-area-inset-bottom))}
+.tab-item{flex:1;text-align:center;padding:6px 0;cursor:pointer;color:#b0b0b0;transition:all .2s}
+.tab-item.active{color:var(--primary-light)}
+.tb-icon{font-size:24px;display:block;margin-bottom:2px}
+.tb-label{font-size:10px;font-weight:500}
+#toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.82);color:#fff;padding:14px 28px;border-radius:12px;font-size:14px;z-index:500;pointer-events:none;opacity:0;transition:opacity .25s;white-space:nowrap;backdrop-filter:blur(8px)}
+#toast.show{opacity:1}
+.version-tag{position:fixed;bottom:90px;right:10px;font-size:10px;color:#ccc;z-index:10;pointer-events:none}
 
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-/* === APP SHELL === */
-#app {
-  max-width: 440px;
-  margin: 0 auto;
-  min-height: 100vh;
-  position: relative;
-  padding-bottom: 80px;
-}
-@media (min-width: 440px) {
-  #app { border-left: 1px solid #e8e8e8; border-right: 1px solid #e8e8e8; }
-}
-
-/* === TOP BAR === */
-.topbar {
-  position: sticky; top: 0; z-index: 100;
-  background: linear-gradient(135deg, #1A5276, #1a3a50);
-  backdrop-filter: blur(20px);
-  padding: 14px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: #fff;
-}
-.topbar-left .title { font-size: 17px; font-weight: 700; letter-spacing: 0.3px; }
-.topbar-left .subtitle { font-size: 11px; opacity: 0.65; margin-top: 1px; }
-.topbar-right { font-size: 28px; animation: float 3s ease-in-out infinite; }
-@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
-
-/* === PAGE SYSTEM === */
-.page { display: none; animation: pageIn 0.3s ease; }
-.page.active { display: block; }
-@keyframes pageIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-
-/* === TODAY HEADER === */
-.today-banner {
-  background: linear-gradient(135deg, #1A5276, #2980B9);
-  color: #fff;
-  margin: 14px;
-  border-radius: var(--radius);
-  padding: 22px 20px;
-  position: relative;
-  overflow: hidden;
-}
-.today-banner::after {
-  content: ''; position: absolute; right: -20px; top: -20px;
-  width: 120px; height: 120px; background: rgba(255,255,255,0.06); border-radius: 50%;
-}
-.today-date { font-size: 13px; opacity: 0.8; margin-bottom: 6px; position: relative; z-index: 1; }
-.today-dow { font-size: 26px; font-weight: 800; position: relative; z-index: 1; }
-.today-motd {
-  font-size: 12px; opacity: 0.8; margin-top: 10px;
-  background: rgba(255,255,255,0.12); display: inline-block;
-  padding: 4px 14px; border-radius: 20px; position: relative; z-index: 1;
-}
-
-/* === COURSE CARDS === */
-.course-card {
-  background: var(--card); border-radius: var(--radius);
-  margin: 0 14px 12px; padding: 18px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-  border-left: 5px solid var(--accent);
-  transition: all 0.2s;
-  position: relative;
-}
-.course-card:active { transform: scale(0.98); background: #fafbfc; }
-.course-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-.course-name { font-size: 18px; font-weight: 700; }
-.course-meta { font-size: 12px; color: var(--text2); margin-top: 3px; }
-.course-badge {
-  font-size: 10px; padding: 3px 10px; border-radius: 12px;
-  font-weight: 600; letter-spacing: 0.5px;
-}
-.badge-major { background: #EBF5FB; color: #2980B9; }
-.badge-english { background: #E8F8F5; color: #16A085; }
-.badge-elective { background: #FEF5E7; color: #E67E22; }
-
-.task-list { margin: 8px 0; }
-.task-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 14px; background: #F8F9FA; border-radius: 10px;
-  margin-bottom: 6px; font-size: 14px; cursor: pointer;
-  transition: all 0.2s;
-}
-.task-item:active { background: #eef1f4; }
-.task-item .check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #d0d5dd; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; transition: all 0.3s; }
-.task-item.done { background: #E8F8F5; }
-.task-item.done .check { background: #16A085; border-color: #16A085; color: #fff; }
-.task-item.done .task-text { text-decoration: line-through; color: #16A085; }
-.task-text { flex: 1; }
-
-.course-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
-.ai-hint { font-size: 11px; color: var(--primary-light); background: #EBF5FB; padding: 5px 12px; border-radius: 8px; max-width: 60%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.btn-start {
-  background: var(--accent); color: #fff; border: none;
-  padding: 10px 24px; border-radius: 20px; font-size: 14px;
-  font-weight: 600; cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 3px 10px rgba(22,160,133,0.3);
-}
-.btn-start:active { transform: scale(0.95); opacity: 0.9; }
-
-/* === FOCUS MODE === */
-.focus-overlay {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  position: fixed; inset: 0; background: var(--focus-bg); z-index: 300;
-  color: #fff; opacity: 0; pointer-events: none; transition: opacity 0.35s;
-}
-.focus-overlay.show { opacity: 1; pointer-events: auto; }
-.focus-timer { font-size: 80px; font-weight: 200; font-family: 'SF Mono', 'Menlo', 'Consolas', monospace; letter-spacing: 2px; font-variant-numeric: tabular-nums; }
-.focus-label { font-size: 15px; opacity: 0.55; margin: 10px 0 28px; letter-spacing: 1px; }
-.focus-rounds { display: flex; gap: 8px; margin-bottom: 28px; }
-.round-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: all 0.3s; }
-.round-dot.done { background: var(--accent); }
-.round-dot.current { background: #fff; box-shadow: 0 0 12px rgba(255,255,255,0.4); }
-.focus-task-list { width: 80%; max-width: 320px; margin-bottom: 32px; }
-.ft-task {
-  padding: 12px 16px; background: rgba(255,255,255,0.06);
-  border-radius: 10px; margin-bottom: 8px; font-size: 14px;
-  display: flex; align-items: center; gap: 10px; cursor: pointer;
-  transition: all 0.2s; border: 1px solid rgba(255,255,255,0.05);
-}
-.ft-task:active { background: rgba(255,255,255,0.12); }
-.ft-task.done { opacity: 0.35; text-decoration: line-through; }
-.ft-dot { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.5); flex-shrink: 0; }
-.ft-task.done .ft-dot { background: var(--accent); border-color: var(--accent); }
-.focus-actions { display: flex; gap: 14px; }
-.btn-focus {
-  padding: 13px 30px; border-radius: 25px; border: none;
-  font-size: 15px; font-weight: 600; cursor: pointer;
-  transition: all 0.2s;
-}
-.btn-focus:active { transform: scale(0.94); }
-.btn-end { background: var(--accent); color: #fff; box-shadow: 0 4px 15px rgba(22,160,133,0.4); }
-.btn-mind { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.15); }
-.btn-break { background: rgba(255,255,255,0.08); color: #fff; }
-.completion-toast {
-  position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
-  background: rgba(22,160,133,0.95); color: #fff; padding: 14px 28px;
-  border-radius: 30px; font-size: 14px; font-weight: 600; z-index: 400;
-  opacity: 0; pointer-events: none; transition: opacity 0.3s;
-  box-shadow: 0 8px 30px rgba(22,160,133,0.3);
-}
-.completion-toast.show { opacity: 1; }
-
-/* === MINDFULNESS === */
-.mind-overlay {
-  display: flex; align-items: center; justify-content: center;
-  position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 350;
-  backdrop-filter: blur(6px); opacity: 0; pointer-events: none; transition: opacity 0.3s;
-}
-.mind-overlay.show { opacity: 1; pointer-events: auto; }
-.mind-card {
-  background: #fff; border-radius: 24px; padding: 32px 28px;
-  text-align: center; width: 85%; max-width: 340px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-}
-.mind-circle-wrap { position: relative; width: 110px; height: 110px; margin: 0 auto 20px; }
-.mind-circle {
-  width: 110px; height: 110px; border-radius: 50%;
-  border: 4px solid #16A085; display: flex; align-items: center;
-  justify-content: center; font-size: 16px; color: #16A085;
-  font-weight: 700; animation: breathe 4s ease-in-out infinite;
-  transition: all 0.5s;
-}
-@keyframes breathe {
-  0%,100% { transform: scale(1); opacity: 0.7; border-color: #16A085; }
-  50% { transform: scale(1.15); opacity: 1; border-color: #1abc9c; }
-}
-.mind-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
-.mind-desc { font-size: 13px; color: #7F8C8D; margin-bottom: 22px; line-height: 1.5; }
-.mind-timer { font-size: 32px; font-weight: 300; margin-bottom: 20px; font-family: 'SF Mono', 'Menlo', monospace; }
-.btn-mind-done {
-  background: var(--accent); color: #fff; border: none;
-  padding: 12px 32px; border-radius: 25px; font-size: 15px;
-  font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(22,160,133,0.3);
-  transition: all 0.2s;
-}
-.btn-mind-done:active { transform: scale(0.95); }
-
-/* === REVIEW MODAL === */
-.modal-overlay {
-  display: flex; align-items: flex-end; justify-content: center;
-  position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 310;
-  opacity: 0; pointer-events: none; transition: opacity 0.3s;
-}
-.modal-overlay.show { opacity: 1; pointer-events: auto; }
-.modal-sheet {
-  background: #fff; border-radius: 22px 22px 0 0; padding: 26px 22px 36px;
-  width: 100%; max-width: 440px; max-height: 80vh; overflow-y: auto;
-  box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
-}
-.modal-sheet h3 { font-size: 19px; font-weight: 700; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-.modal-close { font-size: 28px; color: #ccc; background: none; border: none; cursor: pointer; padding: 0 4px; line-height: 1; }
-.review-score { text-align: center; margin-bottom: 20px; }
-.review-emoji { font-size: 52px; margin-bottom: 6px; }
-.review-pct { font-size: 22px; font-weight: 800; }
-.review-pct.great { color: #16A085; }
-.review-pct.good { color: #2980B9; }
-.review-pct.ok { color: #E67E22; }
-.review-section { margin-bottom: 16px; }
-.review-section label { font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 8px; }
-
-/* === RECORDS PAGE === */
-.stat-row { display: flex; gap: 10px; margin: 14px; }
-.stat-card { flex:1; background: var(--card); border-radius: var(--radius); padding: 18px 14px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-.stat-value { font-size: 30px; font-weight: 800; }
-.stat-label { font-size: 11px; color: var(--text2); margin-top: 4px; }
-.stat-card.c1 .stat-value { color: var(--primary-light); }
-.stat-card.c2 .stat-value { color: var(--accent); }
-.stat-card.c3 .stat-value { color: var(--accent2); }
-
-.record-item {
-  background: var(--card); border-radius: 12px; margin: 0 14px 10px; padding: 16px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
-}
-.record-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-.record-name { font-weight: 700; font-size: 15px; }
-.record-pct { font-size: 15px; font-weight: 700; padding: 4px 10px; border-radius: 8px; }
-.record-pct.great { color: #16A085; background: #E8F8F5; }
-.record-pct.good { color: #2980B9; background: #EBF5FB; }
-.record-pct.ok { color: #E67E22; background: #FEF5E7; }
-.record-meta { font-size: 11px; color: #BDC3C7; }
-.record-ai { font-size: 12px; color: var(--primary-light); font-style: italic; margin-top: 8px; padding: 8px 12px; background: #F5F9FC; border-radius: 8px; }
-
-.empty-state { text-align: center; padding: 50px 20px; color: #BDC3C7; }
-.empty-icon { font-size: 48px; margin-bottom: 12px; }
-.empty-text { font-size: 14px; }
-
-/* === PROFILE PAGE === */
-.profile-card {
-  background: linear-gradient(135deg, #1A5276, #1a3a50);
-  border-radius: 18px; margin: 14px; padding: 28px 20px; text-align: center; color: #fff;
-  box-shadow: 0 8px 25px rgba(26,82,118,0.2);
-}
-.profile-avatar { width: 70px; height: 70px; border-radius: 50%; background: rgba(255,255,255,0.15); margin: 0 auto 14px; display: flex; align-items: center; justify-content: center; font-size: 36px; }
-.profile-name { font-size: 20px; font-weight: 800; }
-.profile-major { font-size: 13px; opacity: 0.7; margin-top: 4px; }
-.profile-stats { display: flex; justify-content: center; gap: 28px; margin-top: 18px; }
-.pstat { text-align: center; }
-.pstat-num { font-size: 24px; font-weight: 800; }
-.pstat-label { font-size: 11px; opacity: 0.65; margin-top: 2px; }
-
-.menu-section { background: var(--card); border-radius: 16px; margin: 0 14px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-.menu-item {
-  display: flex; align-items: center; gap: 12px; padding: 16px 18px;
-  border-bottom: 1px solid #F5F5F5; cursor: pointer; transition: background 0.15s;
-}
-.menu-item:last-child { border: none; }
-.menu-item:active { background: #f8f9fb; }
-.menu-icon { font-size: 22px; width: 30px; text-align: center; }
-.menu-text { flex: 1; font-size: 15px; }
-.menu-arrow { color: #d0d0d0; font-size: 20px; }
-
-.section-label {
-  font-size: 11px; font-weight: 600; color: var(--text2);
-  padding: 18px 14px 10px; text-transform: uppercase; letter-spacing: 1.5px;
-}
-
-.tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 14px 14px; }
-.tool-card {
-  background: var(--card); border-radius: 13px; padding: 18px 14px;
-  text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); cursor: pointer;
-  transition: all 0.2s; border: 1px solid transparent;
-}
-.tool-card:active { transform: scale(0.96); border-color: #e0e0e0; }
-.tool-card .tool-icon { font-size: 30px; margin-bottom: 8px; }
-.tool-card .tool-name { font-size: 14px; font-weight: 700; }
-.tool-card .tool-desc { font-size: 11px; color: var(--text3); margin-top: 3px; }
-
-/* === BOTTOM TAB BAR === */
-.tab-bar {
-  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-  width: 100%; max-width: 440px; background: rgba(255,255,255,0.96);
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  display: flex; border-top: 1px solid #f0f0f0; z-index: 200;
-  padding: 6px 0 max(8px, env(safe-area-inset-bottom));
-}
-.tab-item { flex: 1; text-align: center; padding: 6px 0; cursor: pointer; color: #b0b0b0; transition: all 0.2s; }
-.tab-item.active { color: var(--primary-light); }
-.tab-item .tb-icon { font-size: 24px; display: block; margin-bottom: 2px; }
-.tab-item .tb-label { font-size: 10px; font-weight: 500; }
-
-/* === TOAST === */
-#toast {
-  position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
-  background: rgba(0,0,0,0.82); color: #fff; padding: 14px 28px;
-  border-radius: 12px; font-size: 14px; z-index: 500;
-  pointer-events: none; opacity: 0; transition: opacity 0.25s;
-  white-space: nowrap; backdrop-filter: blur(8px);
-}
-#toast.show { opacity: 1; }
-
-/* === VERSION TAG === */
-.version-tag {
-  position: fixed; bottom: 90px; right: 10px; font-size: 10px;
-  color: #ccc; z-index: 10; pointer-events: none;
-}
+/* ====== SCHEDULE PAGE ====== */
+.sch-back{display:flex;align-items:center;gap:8px;padding:14px;font-size:15px;font-weight:600;color:var(--primary-light);cursor:pointer}
+.sch-back:active{opacity:.7}
+.week-nav{display:flex;gap:12px;margin:4px 14px 14px;overflow-x:auto;padding-bottom:4px}
+.week-chip{padding:8px 16px;border-radius:20px;border:1.5px solid #e0e0e0;font-size:13px;white-space:nowrap;cursor:pointer;transition:all .2s;background:#fff}
+.week-chip.active{background:var(--primary-light);color:#fff;border-color:var(--primary-light)}
+.week-chip .chip-cnt{font-size:10px;display:block;opacity:.7;margin-top:1px}
+.week-grid{display:grid;grid-template-columns:1fr;gap:8px;margin:0 14px 14px}
+.day-card{background:var(--card);border-radius:12px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.03)}
+.day-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #f5f5f5}
+.day-name{font-weight:700;font-size:15px}
+.day-date{font-size:11px;color:var(--text3)}
+.sch-course{background:#f8f9fb;border-radius:10px;padding:12px;margin-bottom:8px;border-left:4px solid #2980B9;cursor:pointer;transition:all .15s}
+.sch-course:active{transform:scale(.98);background:#f0f2f5}
+.sch-course .sc-name{font-weight:700;font-size:14px}
+.sch-course .sc-meta{font-size:11px;color:var(--text2);margin-top:3px}
+.sch-empty{text-align:center;padding:20px;color:var(--text3);font-size:13px}
+.sch-actions{display:flex;gap:10px;margin:0 14px 14px}
+.btn-sch{padding:10px 18px;border-radius:20px;border:none;font-size:13px;font-weight:600;cursor:pointer;background:var(--card);color:var(--primary-light);box-shadow:0 1px 4px rgba(0,0,0,.05);transition:all .2s}
+.btn-sch:active{transform:scale(.96)}
+.btn-sch.primary{background:var(--primary-light);color:#fff}
+.btn-sch.danger{color:var(--danger)}
+.import-tabs{display:flex;gap:0;margin-bottom:20px;border-radius:10px;overflow:hidden;border:1.5px solid #e0e0e0}
+.import-tab{flex:1;text-align:center;padding:10px;font-size:13px;font-weight:600;cursor:pointer;background:#f8f9fb;transition:all .15s}
+.import-tab.active{background:var(--primary-light);color:#fff}
+.import-tab:not(:last-child){border-right:1.5px solid #e0e0e0}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:13px;font-weight:600;color:#555;margin-bottom:5px}
+.form-input{width:100%;padding:10px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:15px;outline:none;font-family:inherit}
+.form-input:focus{border-color:var(--primary-light)}
+.form-row{display:flex;gap:8px}
+.form-row .form-group{flex:1}
+.form-select{width:100%;padding:10px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:15px;outline:none;background:#fff;font-family:inherit}
+.btn-primary{width:100%;padding:14px;border:none;border-radius:12px;background:var(--primary-light);color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-primary:active{transform:scale(.97);opacity:.9}
+.btn-outline{width:100%;padding:12px;border:1.5px solid var(--danger);border-radius:10px;background:transparent;color:var(--danger);font-size:14px;font-weight:600;cursor:pointer;margin-top:6px;transition:all .2s}
+.btn-outline:active{background:#FFF5F5}
+.ta-large{width:100%;padding:12px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;font-family:monospace;resize:vertical;min-height:160px;outline:none;line-height:1.6}
+.ta-large:focus{border-color:var(--primary-light)}
+.hint-box{background:#FEF5E7;border-radius:8px;padding:10px;font-size:11px;color:#E67E22;margin-bottom:14px;line-height:1.5}
 </style>
 </head>
 <body>
 
 <div id="app">
 
-  <!-- ====== TOP BAR ====== -->
-  <div class="topbar">
-    <div class="topbar-left">
-      <div class="title">📚 课堂专注力助手</div>
-      <div class="subtitle">专注每一课 · 成就更好的自己</div>
-    </div>
-    <div class="topbar-right">🧠</div>
+<div class="topbar">
+  <div class="topbar-left"><div class="title">📚 课堂专注力助手</div><div class="subtitle">专注每一课 · 成就更好的自己</div></div>
+  <div class="topbar-right">🧠</div>
+</div>
+
+<!-- ====== 今日课堂 ====== -->
+<div class="page active" id="page-today">
+  <div class="today-banner">
+    <div class="today-date" id="todayDate"></div><div class="today-dow" id="todayDow"></div><div class="today-motd" id="todayMotd"></div>
   </div>
+  <div id="courseList"></div>
+</div>
 
-  <!-- ====== PAGE: 今日课堂 ====== -->
-  <div class="page active" id="page-today">
-    <div class="today-banner">
-      <div class="today-date" id="todayDate"></div>
-      <div class="today-dow" id="todayDow"></div>
-      <div class="today-motd" id="todayMotd"></div>
-    </div>
-    <div id="courseList"></div>
+<!-- ====== 任务记录 ====== -->
+<div class="page" id="page-records">
+  <div class="stat-row">
+    <div class="stat-card c1"><div class="stat-value" id="statRate">--</div><div class="stat-label">本周完成率</div></div>
+    <div class="stat-card c2"><div class="stat-value" id="statFocus">0h</div><div class="stat-label">累计专注</div></div>
+    <div class="stat-card c3"><div class="stat-value" id="statSessions">0次</div><div class="stat-label">专注次数</div></div>
   </div>
+  <div id="recordList"></div>
+</div>
 
-  <!-- ====== PAGE: 任务记录 ====== -->
-  <div class="page" id="page-records">
-    <div class="stat-row">
-      <div class="stat-card c1"><div class="stat-value" id="statRate">--</div><div class="stat-label">本周完成率</div></div>
-      <div class="stat-card c2"><div class="stat-value" id="statFocus">0h</div><div class="stat-label">累计专注</div></div>
-      <div class="stat-card c3"><div class="stat-value" id="statSessions">0次</div><div class="stat-label">专注次数</div></div>
-    </div>
-    <div id="recordList"></div>
-  </div>
-
-  <!-- ====== PAGE: 我的 ====== -->
-  <div class="page" id="page-profile">
-    <div class="profile-card">
-      <div class="profile-avatar">📚</div>
-      <div class="profile-name" id="profileName">医学生</div>
-      <div class="profile-major" id="profileMajor">临床医学 · 大三</div>
-      <div class="profile-stats">
-        <div class="pstat"><div class="pstat-num" id="pfFocus">0h</div><div class="pstat-label">总专注</div></div>
-        <div class="pstat"><div class="pstat-num" id="pfTasks">0</div><div class="pstat-label">完成任务</div></div>
-        <div class="pstat"><div class="pstat-num" id="pfMind">0次</div><div class="pstat-label">正念练习</div></div>
-      </div>
-    </div>
-
-    <div class="menu-section">
-      <div class="menu-item" onclick="showToast('课表管理功能开发中，敬请期待')">
-        <span class="menu-icon">📅</span><span class="menu-text">课表管理</span><span class="menu-arrow">›</span>
-      </div>
-      <div class="menu-item" onclick="showToast('专注提醒设置开发中')">
-        <span class="menu-icon">🔔</span><span class="menu-text">专注提醒设置</span><span class="menu-arrow">›</span>
-      </div>
-      <div class="menu-item" onclick="showToast('学习目标设定开发中')">
-        <span class="menu-icon">🎯</span><span class="menu-text">学习目标设定</span><span class="menu-arrow">›</span>
-      </div>
-      <div class="menu-item" onclick="showToast('AI推荐偏好开发中')">
-        <span class="menu-icon">🤖</span><span class="menu-text">AI推荐偏好</span><span class="menu-arrow">›</span>
-      </div>
-    </div>
-
-    <div class="section-label">📌 学习工具 · 快捷入口</div>
-    <div class="tool-grid">
-      <div class="tool-card" onclick="window.open('https://www.uptodate.com','_blank')">
-        <div class="tool-icon">🔬</div><div class="tool-name">UpToDate</div><div class="tool-desc">临床顾问</div>
-      </div>
-      <div class="tool-card" onclick="window.open('https://pubmed.ncbi.nlm.nih.gov','_blank')">
-        <div class="tool-icon">📖</div><div class="tool-name">PubMed</div><div class="tool-desc">文献检索</div>
-      </div>
-      <div class="tool-card" onclick="showToast('请在App Store搜索 Complete Anatomy')">
-        <div class="tool-icon">🦴</div><div class="tool-name">3D解剖</div><div class="tool-desc">CompleteAnatomy</div>
-      </div>
-      <div class="tool-card" onclick="showToast('请在应用商店搜索 医考帮')">
-        <div class="tool-icon">📝</div><div class="tool-name">医学题库</div><div class="tool-desc">医考帮</div>
-      </div>
+<!-- ====== 我的 ====== -->
+<div class="page" id="page-profile">
+  <div class="profile-card">
+    <div class="profile-avatar">📚</div><div class="profile-name" id="profileName">医学生</div><div class="profile-major" id="profileMajor">临床医学 · 大三</div>
+    <div class="profile-stats">
+      <div class="pstat"><div class="pstat-num" id="pfFocus">0h</div><div class="pstat-label">总专注</div></div>
+      <div class="pstat"><div class="pstat-num" id="pfTasks">0</div><div class="pstat-label">完成任务</div></div>
+      <div class="pstat"><div class="pstat-num" id="pfMind">0次</div><div class="pstat-label">正念练习</div></div>
     </div>
   </div>
+  <div class="menu-section">
+    <div class="menu-item" onclick="window.openSchedule()"><span class="menu-icon">📅</span><span class="menu-text">课表管理</span><span class="menu-arrow">›</span></div>
+    <div class="menu-item" onclick="window.showToast('专注提醒设置开发中')"><span class="menu-icon">🔔</span><span class="menu-text">专注提醒设置</span><span class="menu-arrow">›</span></div>
+    <div class="menu-item" onclick="window.showToast('学习目标设定开发中')"><span class="menu-icon">🎯</span><span class="menu-text">学习目标设定</span><span class="menu-arrow">›</span></div>
+    <div class="menu-item" onclick="window.showToast('AI推荐偏好开发中')"><span class="menu-icon">🤖</span><span class="menu-text">AI推荐偏好</span><span class="menu-arrow">›</span></div>
+  </div>
+  <div class="section-label">📌 学习工具 · 快捷入口</div>
+  <div class="tool-grid">
+    <div class="tool-card" onclick="window.open('https://www.uptodate.com','_blank')"><div class="tool-icon">🔬</div><div class="tool-name">UpToDate</div><div class="tool-desc">临床顾问</div></div>
+    <div class="tool-card" onclick="window.open('https://pubmed.ncbi.nlm.nih.gov','_blank')"><div class="tool-icon">📖</div><div class="tool-name">PubMed</div><div class="tool-desc">文献检索</div></div>
+    <div class="tool-card" onclick="window.showToast('请在App Store搜索 Complete Anatomy')"><div class="tool-icon">🦴</div><div class="tool-name">3D解剖</div><div class="tool-desc">CompleteAnatomy</div></div>
+    <div class="tool-card" onclick="window.showToast('请在应用商店搜索 医考帮')"><div class="tool-icon">📝</div><div class="tool-name">医学题库</div><div class="tool-desc">医考帮</div></div>
+  </div>
+</div>
+
+<!-- ====== 课表管理（新）====== -->
+<div class="page" id="page-schedule">
+  <div class="sch-back" onclick="window.goProfile()">← 返回</div>
+  <div class="week-nav" id="weekNav"></div>
+  <div class="week-grid" id="weekGrid"></div>
+  <div class="sch-actions">
+    <button class="btn-sch primary" onclick="window.openImportModal()">＋ 导入课表</button>
+    <button class="btn-sch" onclick="window.openAddCourse()">＋ 手动添加</button>
+  </div>
+</div>
 
 </div><!-- /#app -->
 
+<!-- ====== IMPORT MODAL ====== -->
+<div class="modal-overlay" id="importModal">
+  <div class="modal-sheet">
+    <h3>📥 导入课表 <button class="modal-close" onclick="window.closeImport()">×</button></h3>
+    <div class="import-tabs" id="importTabs">
+      <div class="import-tab active" data-tab="manual">📝 手动录入</div>
+      <div class="import-tab" data-tab="text">📋 文字粘贴</div>
+      <div class="import-tab" data-tab="json">📁 JSON导入</div>
+    </div>
+
+    <!-- 手动录入表单 -->
+    <div id="tab-manual" class="import-panel">
+      <div class="form-group"><label>课程名称 *</label><input class="form-input" id="mName" placeholder="例：生理学"></div>
+      <div class="form-row">
+        <div class="form-group"><label>星期 *</label><select class="form-select" id="mDay"><option value="1">周一</option><option value="2">周二</option><option value="3">周三</option><option value="4">周四</option><option value="5">周五</option><option value="6">周六</option><option value="0">周日</option></select></div>
+        <div class="form-group"><label>课程类型</label><select class="form-select" id="mType"><option value="专业课">专业课</option><option value="英语课">英语课</option><option value="公选课">公选课</option><option value="实验课">实验课</option><option value="其他">其他</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>开始时间</label><input class="form-input" id="mStartTime" placeholder="08:00"></div>
+        <div class="form-group"><label>结束时间</label><input class="form-input" id="mEndTime" placeholder="09:40"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>教室</label><input class="form-input" id="mRoom" placeholder="教学楼301"></div>
+        <div class="form-group"><label>教师</label><input class="form-input" id="mTeacher" placeholder="张老师"></div>
+      </div>
+      <div class="form-group"><label>周次</label><input class="form-input" id="mWeeks" placeholder="例：1-16 或 1,3,5,7-16"></div>
+      <div class="form-group"><label>课后任务（每行一个）</label><textarea class="ta-large" id="mTasks" placeholder="记录3个核心概念&#10;提出1个课堂疑问&#10;用思维导图整理框架" style="min-height:100px"></textarea></div>
+      <input type="hidden" id="mEditId" value="">
+      <button class="btn-primary" onclick="window.saveCourse()">💾 保存课程</button>
+      <button class="btn-outline" id="btnDeleteCourse" style="display:none" onclick="window.deleteCourse()">🗑 删除此课程</button>
+    </div>
+
+    <!-- 文字粘贴导入 -->
+    <div id="tab-text" class="import-panel" style="display:none">
+      <div class="hint-box">💡 支持格式：<br>周一<br>08:00-09:40 生理学 教学楼301<br>10:00-11:40 医学英语 教学楼205<br><br>或：生理学 周一 08:00-09:40 教学楼301</div>
+      <div class="form-group"><label>粘贴课表文本</label><textarea class="ta-large" id="textInput" placeholder="粘贴你的课表文字..."></textarea></div>
+      <button class="btn-primary" onclick="window.parseTextImport()">🔍 解析并导入</button>
+    </div>
+
+    <!-- JSON 导入 -->
+    <div id="tab-json" class="import-panel" style="display:none">
+      <div class="hint-box">📁 粘贴从教务系统导出的 JSON 课表数据，或上传文件。</div>
+      <div class="form-group"><label>粘贴 JSON</label><textarea class="ta-large" id="jsonInput" placeholder="[{&quot;name&quot;:&quot;生理学&quot;,&quot;day&quot;:1,...}]"></textarea></div>
+      <button class="btn-primary" onclick="window.parseJSONImport()">📋 解析并导入</button>
+      <div style="text-align:center;margin-top:12px;color:var(--text3);font-size:12px">— 或 —</div>
+      <div class="form-group" style="margin-top:12px"><label>上传 JSON 文件</label><input type="file" id="jsonFileInput" accept=".json" onchange="window.handleJSONFile(this)" style="display:block;margin-top:6px"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ====== FOCUS OVERLAY ====== -->
 <div class="focus-overlay" id="focusOverlay">
-  <div class="focus-timer" id="focusTimer">25:00</div>
-  <div class="focus-label" id="focusLabel">准备开始专注</div>
+  <div class="focus-timer" id="focusTimer">25:00</div><div class="focus-label" id="focusLabel">准备开始专注</div>
   <div class="focus-rounds" id="focusRounds"></div>
   <div class="focus-task-list" id="focusTasks"></div>
   <div class="focus-actions">
-    <button class="btn-focus btn-mind" onclick="openMindfulness()">🧘 正念</button>
-    <button class="btn-focus btn-break" id="breakBtn" style="display:none" onclick="takeBreak()">☕ 休息</button>
-    <button class="btn-focus btn-end" onclick="endFocus()">✅ 结束专注</button>
+    <button class="btn-focus btn-mind" onclick="window.openMindfulness()">🧘 正念</button>
+    <button class="btn-focus btn-break" id="breakBtn" style="display:none" onclick="window.takeBreak()">☕ 休息</button>
+    <button class="btn-focus btn-end" onclick="window.endFocus()">✅ 结束专注</button>
   </div>
 </div>
-
-<!-- ====== COMPLETION TOAST ====== -->
 <div class="completion-toast" id="completionToast"></div>
 
-<!-- ====== MINDFULNESS OVERLAY ====== -->
 <div class="mind-overlay" id="mindOverlay">
   <div class="mind-card">
     <div class="mind-circle-wrap"><div class="mind-circle" id="mindCircle">吸气</div></div>
-    <div class="mind-title">正念呼吸</div>
-    <div class="mind-desc">跟随圆圈的节奏<br>专注你的呼吸，放松身心</div>
+    <div class="mind-title">正念呼吸</div><div class="mind-desc">跟随圆圈的节奏<br>专注你的呼吸，放松身心</div>
     <div class="mind-timer" id="mindTimer">2:00</div>
-    <button class="btn-mind-done" onclick="endMindfulness()">完成练习 ✅</button>
+    <button class="btn-mind-done" onclick="window.endMindfulness()">完成练习 ✅</button>
   </div>
 </div>
 
-<!-- ====== REVIEW MODAL ====== -->
 <div class="modal-overlay" id="reviewModal">
-  <div class="modal-sheet" id="reviewSheet">
-    <h3>📋 课后复盘 <button class="modal-close" onclick="closeReview()">×</button></h3>
-    <div id="reviewContent"></div>
-  </div>
+  <div class="modal-sheet"><h3>📋 课后复盘 <button class="modal-close" onclick="window.closeReview()">×</button></h3><div id="reviewContent"></div></div>
 </div>
 
-<!-- ====== TOAST ====== -->
 <div id="toast"></div>
+<div class="version-tag">v3.0 · 含课表管理</div>
 
-<!-- ====== VERSION TAG ====== -->
-<div class="version-tag">v2.0 · 2025.05.09</div>
-
-<!-- ====== TAB BAR ====== -->
-<div class="tab-bar">
+<div class="tab-bar" id="mainTabBar">
   <div class="tab-item active" data-page="today"><span class="tb-icon">📋</span><span class="tb-label">今日课堂</span></div>
   <div class="tab-item" data-page="records"><span class="tb-icon">📊</span><span class="tb-label">任务记录</span></div>
   <div class="tab-item" data-page="profile"><span class="tb-icon">👤</span><span class="tb-label">我的</span></div>
 </div>
 
 <script>
-(function() {
-'use strict';
+(function(){'use strict';
 
 // ==================== DATA ====================
-const COURSES = [
-  {
-    id: 1,
-    name: '生理学',
-    time: '08:00 - 09:40',
-    type: '专业课（理论）',
-    room: '教学楼 301',
-    badgeClass: 'badge-major',
-    color: '#2980B9',
-    tasks: [
-      { text: '记录3个核心概念', done: false },
-      { text: '提出1个课堂疑问', done: false },
-      { text: '用思维导图整理框架', done: false }
-    ]
-  },
-  {
-    id: 2,
-    name: '医学英语',
-    time: '10:00 - 11:40',
-    type: '英语课',
-    room: '教学楼 205',
-    badgeClass: 'badge-english',
-    color: '#16A085',
-    tasks: [
-      { text: '记录5个新单词', done: false },
-      { text: '准备课堂发言', done: false },
-      { text: '查词后立即记录', done: false }
-    ]
-  },
-  {
-    id: 3,
-    name: '思政课',
-    time: '14:00 - 15:40',
-    type: '公选课',
-    room: '综合楼 102',
-    badgeClass: 'badge-elective',
-    color: '#E67E22',
-    tasks: [
-      { text: '记录1个引发思考的观点', done: false },
-      { text: '完成20个单词背诵', done: false },
-      { text: '整理待办清单', done: false }
-    ]
-  }
-];
+var COLORS = ['#2980B9','#16A085','#E67E22','#8E44AD','#E74C3C','#2ECC71','#3498DB','#F39C12','#1ABC9C','#9B59B6'];
+var TYPE_BADGES = { '专业课':'badge-major','英语课':'badge-english','公选课':'badge-elective','实验课':'badge-lab','其他':'badge-other' };
+var DAY_NAMES = ['周日','周一','周二','周三','周四','周五','周六'];
 
-// ==================== STATE ====================
-let records = [];
-let focusMinutes = 0;
-let tasksDone = 0;
-let mindSessions = 0;
-let currentCourse = null;
-let focusTimerId = null;
-let mindTimerId = null;
-let focusSeconds = 25 * 60;
-let focusRound = 1;
-let mindSeconds = 120;
+var schedule = [];   // 课表数据
+var records = [];
+var focusMinutes = 0, tasksDone = 0, mindSessions = 0;
+var currentCourse = null, focusTimerId = null, mindTimerId = null;
+var focusSeconds = 25*60, focusRound = 1, mindSeconds = 120;
+var currentWeekIdx = 0; // 课表页当前查看的周偏移
 
 // ==================== STORAGE ====================
-function loadData() {
-  try {
-    records = JSON.parse(localStorage.getItem('fa_records') || '[]');
-    focusMinutes = parseInt(localStorage.getItem('fa_focus_mins') || '0') || 0;
-    tasksDone = parseInt(localStorage.getItem('fa_tasks_done') || '0') || 0;
-    mindSessions = parseInt(localStorage.getItem('fa_mind_sessions') || '0') || 0;
-  } catch(e) {
-    records = []; focusMinutes = 0; tasksDone = 0; mindSessions = 0;
-    console.warn('数据加载失败，已重置');
-  }
+function loadData(){
+  try{
+    schedule = JSON.parse(localStorage.getItem('fa_schedule')||'[]');
+    records = JSON.parse(localStorage.getItem('fa_records')||'[]');
+    focusMinutes = parseInt(localStorage.getItem('fa_focus_mins')||'0')||0;
+    tasksDone = parseInt(localStorage.getItem('fa_tasks_done')||'0')||0;
+    mindSessions = parseInt(localStorage.getItem('fa_mind_sessions')||'0')||0;
+  }catch(e){ schedule=[];records=[];focusMinutes=0;tasksDone=0;mindSessions=0; }
 }
 
-function saveData() {
-  try {
-    localStorage.setItem('fa_records', JSON.stringify(records.slice(-100)));
-    localStorage.setItem('fa_focus_mins', String(focusMinutes));
-    localStorage.setItem('fa_tasks_done', String(tasksDone));
-    localStorage.setItem('fa_mind_sessions', String(mindSessions));
-  } catch(e) {
-    console.warn('数据保存失败');
-  }
+function saveAll(){
+  try{
+    localStorage.setItem('fa_schedule',JSON.stringify(schedule));
+    localStorage.setItem('fa_records',JSON.stringify(records.slice(-100)));
+    localStorage.setItem('fa_focus_mins',String(focusMinutes));
+    localStorage.setItem('fa_tasks_done',String(tasksDone));
+    localStorage.setItem('fa_mind_sessions',String(mindSessions));
+  }catch(e){}
 }
 
-// ==================== TODAY PAGE ====================
-function initToday() {
-  var now = new Date();
-  var days = ['日','一','二','三','四','五','六'];
-  var dateStr = now.getFullYear() + '年' + (now.getMonth()+1) + '月' + now.getDate() + '日';
-  var dowStr = '星期' + days[now.getDay()];
+function generateId(){ return Date.now().toString(36)+Math.random().toString(36).substr(2,6); }
 
-  var motds = [
-    '📌 专注的你，比手机里的任何内容都精彩',
-    '📌 每节课设定目标，是对自己的承诺',
-    '📌 你不是在对抗手机，是在守护自己的时间',
-    '📌 正念一分钟，胜过走神一小时',
-    '📌 今天的任务决定明天的你',
-    '📌 专注力是最好的天赋',
-    '📌 每一节课都是一次成长的机会'
+// ==================== TODAY PAGE (uses schedule) ====================
+function getTodayCourses(){
+  var d = new Date().getDay(); // 0=Sun
+  var today = schedule.filter(function(c){ return c.day === d; });
+  // Sort by start time
+  today.sort(function(a,b){ return (a.startTime||'').localeCompare(b.startTime||''); });
+  // If no courses in schedule, use defaults
+  if(today.length===0 && schedule.length===0){
+    return getDefaultCourses();
+  }
+  return today;
+}
+
+function getDefaultCourses(){
+  return [
+    {id:'d1',name:'📌 还没有课表',time:'',type:'提示',room:'',badgeClass:'badge-other',color:'#7F8C8D',tasks:[{text:'去「我的」→「课表管理」导入课表',done:false}]}
   ];
-
-  document.getElementById('todayDate').textContent = dateStr;
-  document.getElementById('todayDow').textContent = dowStr;
-  document.getElementById('todayMotd').textContent = motds[now.getDay() % motds.length];
-
-  renderCourses();
 }
 
-function renderCourses() {
+function initToday(){
+  var now = new Date();
+  document.getElementById('todayDate').textContent = now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日';
+  document.getElementById('todayDow').textContent = '星期'+['日','一','二','三','四','五','六'][now.getDay()];
+  var motds = ['📌 专注的你，比手机里的任何内容都精彩','📌 每节课设定目标，是对自己的承诺','📌 你不是在对抗手机，是在守护自己的时间','📌 正念一分钟，胜过走神一小时','📌 今天的任务决定明天的你','📌 专注力是最好的天赋','📌 每一节课都是一次成长的机会'];
+  document.getElementById('todayMotd').textContent = motds[now.getDay()%motds.length];
+  renderTodayCourses();
+}
+
+function renderTodayCourses(){
+  var courses = getTodayCourses();
   var html = '';
-  for (var i = 0; i < COURSES.length; i++) {
-    var c = COURSES[i];
-    var doneCount = 0;
-    for (var j = 0; j < c.tasks.length; j++) {
-      if (c.tasks[j].done) doneCount++;
-    }
-    html += '<div class="course-card" style="border-left-color:' + c.color + '">';
-    html += '<div class="course-header">';
-    html += '<div><div class="course-name">' + c.name + '</div><div class="course-meta">🕐 ' + c.time + ' · 📍 ' + c.room + '</div></div>';
-    html += '<span class="course-badge ' + c.badgeClass + '">' + c.type + '</span>';
-    html += '</div>';
-    html += '<div class="task-list">';
-    for (var k = 0; k < c.tasks.length; k++) {
-      var t = c.tasks[k];
-      html += '<div class="task-item' + (t.done ? ' done' : '') + '" onclick="window.toggleTask(' + c.id + ',' + k + ')">';
-      html += '<div class="check">' + (t.done ? '✓' : '') + '</div>';
-      html += '<span class="task-text">' + t.text + '</span>';
+  if(courses.length===0){
+    html = '<div class="no-courses"><div class="nc-icon">🎉</div><div class="nc-text">今天没有课程</div><div class="nc-sub">去「我的」→「课表管理」添加课表</div></div>';
+  } else {
+    for(var i=0;i<courses.length;i++){
+      var c = courses[i];
+      if(!c.tasks) c.tasks = [];
+      var doneCount = 0;
+      for(var j=0;j<c.tasks.length;j++){ if(c.tasks[j].done) doneCount++; }
+      var badgeCls = TYPE_BADGES[c.type]||'badge-other';
+      var colorIdx = schedule.indexOf(c);
+      if(colorIdx<0) colorIdx = i;
+      var color = c.color || COLORS[colorIdx%COLORS.length];
+      html += '<div class="course-card" style="border-left-color:'+color+'">';
+      html += '<div class="course-header"><div><div class="course-name">'+c.name+'</div><div class="course-meta">🕐 '+(c.startTime||'?')+' - '+(c.endTime||'?')+' · 📍 '+(c.room||'未设置')+'</div></div>';
+      html += '<span class="course-badge '+badgeCls+'">'+(c.type||'')+'</span></div>';
+      html += '<div class="task-list">';
+      for(var k=0;k<c.tasks.length;k++){
+        var t = c.tasks[k];
+        html += '<div class="task-item'+(t.done?' done':'')+'" onclick="window.toggleScheduleTask(\''+c.id+'\','+k+')"><div class="check">'+(t.done?'✓':'')+'</div><span class="task-text">'+t.text+'</span></div>';
+      }
       html += '</div>';
+      html += '<div class="course-footer">';
+      html += '<span class="ai-hint">'+(doneCount===c.tasks.length&&c.tasks.length>0?'🎉 全部完成！':'🤖 点击开始番茄钟专注学习')+'</span>';
+      html += '<button class="btn-start" onclick="window.startScheduleCourse(\''+c.id+'\')">▶ 开始专注</button>';
+      html += '</div></div>';
     }
-    html += '</div>';
-    html += '<div class="course-footer">';
-    var hint = doneCount === c.tasks.length ? '🎉 全部完成，太棒了！' : '🤖 ' + c.tasks[0].text.replace(/^\d+[个项]?/, '') + ' — 试试番茄钟';
-    html += '<span class="ai-hint">' + hint + '</span>';
-    html += '<button class="btn-start" onclick="window.startCourse(' + c.id + ')">▶ 开始专注</button>';
-    html += '</div>';
-    html += '</div>';
   }
   document.getElementById('courseList').innerHTML = html;
 }
 
-window.toggleTask = function(courseId, taskIdx) {
-  for (var i = 0; i < COURSES.length; i++) {
-    if (COURSES[i].id === courseId) {
-      COURSES[i].tasks[taskIdx].done = !COURSES[i].tasks[taskIdx].done;
-      break;
-    }
-  }
-  renderCourses();
+window.toggleScheduleTask = function(cid,idx){
+  var found = null;
+  for(var i=0;i<schedule.length;i++){ if(schedule[i].id===cid){ found=schedule[i]; break; } }
+  if(!found) return;
+  if(!found.tasks) found.tasks = [];
+  if(found.tasks[idx]) found.tasks[idx].done = !found.tasks[idx].done;
+  saveAll();
+  renderTodayCourses();
   updateAllStats();
+};
+
+window.startScheduleCourse = function(cid){
+  for(var i=0;i<schedule.length;i++){ if(schedule[i].id===cid){ currentCourse=schedule[i]; break; } }
+  if(!currentCourse) return;
+  if(!currentCourse.tasks) currentCourse.tasks = [];
+  startFocusMode();
 };
 
 // ==================== FOCUS MODE ====================
-window.startCourse = function(courseId) {
-  for (var i = 0; i < COURSES.length; i++) {
-    if (COURSES[i].id === courseId) {
-      currentCourse = COURSES[i];
-      break;
-    }
-  }
-  if (!currentCourse) return;
-
-  focusSeconds = 25 * 60;
-  focusRound = 1;
-
+function startFocusMode(){
+  focusSeconds = 25*60; focusRound = 1;
   document.getElementById('focusTimer').textContent = '25:00';
   document.getElementById('focusLabel').textContent = '专注中 · 第 1 轮';
   document.getElementById('breakBtn').style.display = 'none';
-
-  // render round dots
-  var dotsHtml = '';
-  for (var r = 1; r <= 4; r++) {
-    dotsHtml += '<div class="round-dot' + (r === 1 ? ' current' : '') + '" id="roundDot' + r + '"></div>';
+  var dots='';
+  for(var r=1;r<=4;r++){ dots+='<div class="round-dot'+(r===1?' current':'')+'" id="roundDot'+r+'"></div>'; }
+  document.getElementById('focusRounds').innerHTML = dots;
+  var ft='';
+  var tasks = currentCourse.tasks||[];
+  for(var j=0;j<tasks.length;j++){
+    var t = tasks[j];
+    ft+='<div class="ft-task'+(t.done?' done':'')+'" onclick="window.toggleFocusTask('+j+')"><div class="ft-dot"></div><span>'+t.text+'</span></div>';
   }
-  document.getElementById('focusRounds').innerHTML = dotsHtml;
-
-  // render task list
-  var tasksHtml = '';
-  for (var j = 0; j < currentCourse.tasks.length; j++) {
-    var t = currentCourse.tasks[j];
-    tasksHtml += '<div class="ft-task' + (t.done ? ' done' : '') + '" onclick="window.toggleFocusTask(' + j + ')">';
-    tasksHtml += '<div class="ft-dot"></div>';
-    tasksHtml += '<span>' + t.text + '</span>';
-    tasksHtml += '</div>';
-  }
-  document.getElementById('focusTasks').innerHTML = tasksHtml;
-
+  document.getElementById('focusTasks').innerHTML = ft;
   document.getElementById('focusOverlay').classList.add('show');
   startFocusTimer();
-};
-
-window.toggleFocusTask = function(idx) {
-  currentCourse.tasks[idx].done = !currentCourse.tasks[idx].done;
-  var ftHtml = '';
-  for (var i = 0; i < currentCourse.tasks.length; i++) {
-    var t = currentCourse.tasks[i];
-    ftHtml += '<div class="ft-task' + (t.done ? ' done' : '') + '" onclick="window.toggleFocusTask(' + i + ')">';
-    ftHtml += '<div class="ft-dot"></div><span>' + t.text + '</span></div>';
-  }
-  document.getElementById('focusTasks').innerHTML = ftHtml;
-  renderCourses();
-};
-
-function startFocusTimer() {
-  if (focusTimerId) clearInterval(focusTimerId);
-  focusTimerId = setInterval(function() {
-    focusSeconds--;
-    var m = Math.floor(focusSeconds / 60);
-    var s = focusSeconds % 60;
-    document.getElementById('focusTimer').textContent =
-      (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
-
-    if (focusSeconds <= 0) {
-      clearInterval(focusTimerId);
-      focusTimerId = null;
-
-      // Update round dots
-      for (var r = 1; r <= 4; r++) {
-        var dot = document.getElementById('roundDot' + r);
-        if (!dot) continue;
-        dot.classList.remove('current');
-        if (r === focusRound) dot.classList.add('done');
-      }
-
-      focusRound++;
-      if (focusRound <= 4) {
-        document.getElementById('focusLabel').textContent = '专注中 · 第 ' + focusRound + ' 轮';
-        document.getElementById('breakBtn').style.display = 'inline-block';
-
-        // Show toast
-        var toast = document.getElementById('completionToast');
-        toast.textContent = '🎉 第' + (focusRound-1) + '轮完成！休息一下吧';
-        toast.classList.add('show');
-        setTimeout(function() { toast.classList.remove('show'); }, 2500);
-
-        // Auto restart timer with same 25min
-        focusSeconds = 25 * 60;
-        document.getElementById('focusTimer').textContent = '25:00';
-      } else {
-        // All 4 rounds done
-        document.getElementById('focusLabel').textContent = '全部轮次完成！';
-        document.getElementById('breakBtn').style.display = 'none';
-        document.getElementById('focusTimer').textContent = '🏁';
-      }
-    }
-  }, 1000);
 }
 
-window.takeBreak = function() {
-  if (focusTimerId) clearInterval(focusTimerId);
-  var breakSec = 120;
-  document.getElementById('focusLabel').textContent = '休息中 ☕';
-  document.getElementById('breakBtn').style.display = 'none';
-  focusTimerId = setInterval(function() {
-    breakSec--;
-    var m = Math.floor(breakSec / 60);
-    var s = breakSec % 60;
-    document.getElementById('focusTimer').textContent =
-      (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
-    if (breakSec <= 0) {
-      clearInterval(focusTimerId);
-      focusSeconds = 25 * 60;
-      document.getElementById('focusTimer').textContent = '25:00';
-      document.getElementById('focusLabel').textContent = '专注中 · 第 ' + focusRound + ' 轮';
-      startFocusTimer();
-    }
-  }, 1000);
+window.toggleFocusTask = function(idx){
+  if(!currentCourse.tasks) currentCourse.tasks=[];
+  currentCourse.tasks[idx].done = !currentCourse.tasks[idx].done;
+  var ft='';
+  for(var i=0;i<currentCourse.tasks.length;i++){
+    var t=currentCourse.tasks[i];
+    ft+='<div class="ft-task'+(t.done?' done':'')+'" onclick="window.toggleFocusTask('+i+')"><div class="ft-dot"></div><span>'+t.text+'</span></div>';
+  }
+  document.getElementById('focusTasks').innerHTML = ft;
+  renderTodayCourses();
 };
 
-window.endFocus = function() {
-  if (focusTimerId) { clearInterval(focusTimerId); focusTimerId = null; }
+function startFocusTimer(){
+  if(focusTimerId) clearInterval(focusTimerId);
+  focusTimerId = setInterval(function(){
+    focusSeconds--;
+    var m=Math.floor(focusSeconds/60),s=focusSeconds%60;
+    document.getElementById('focusTimer').textContent = (m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+    if(focusSeconds<=0){
+      clearInterval(focusTimerId); focusTimerId=null;
+      for(var r=1;r<=4;r++){ var dot=document.getElementById('roundDot'+r); if(dot){dot.classList.remove('current');if(r===focusRound)dot.classList.add('done');} }
+      focusRound++;
+      if(focusRound<=4){
+        document.getElementById('focusLabel').textContent='专注中 · 第'+focusRound+'轮';
+        document.getElementById('breakBtn').style.display='inline-block';
+        var toast=document.getElementById('completionToast');
+        toast.textContent='🎉 第'+(focusRound-1)+'轮完成！休息一下吧';
+        toast.classList.add('show'); setTimeout(function(){toast.classList.remove('show')},2500);
+        focusSeconds=25*60; document.getElementById('focusTimer').textContent='25:00';
+      }else{
+        document.getElementById('focusLabel').textContent='全部轮次完成！';
+        document.getElementById('breakBtn').style.display='none';
+        document.getElementById('focusTimer').textContent='🏁';
+      }
+    }
+  },1000);
+}
+
+window.takeBreak = function(){
+  if(focusTimerId) clearInterval(focusTimerId);
+  var breakSec=120;
+  document.getElementById('focusLabel').textContent='休息中 ☕';
+  document.getElementById('breakBtn').style.display='none';
+  focusTimerId=setInterval(function(){
+    breakSec--;
+    var m=Math.floor(breakSec/60),s=breakSec%60;
+    document.getElementById('focusTimer').textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+    if(breakSec<=0){ clearInterval(focusTimerId); focusSeconds=25*60; document.getElementById('focusTimer').textContent='25:00'; document.getElementById('focusLabel').textContent='专注中 · 第'+focusRound+'轮'; startFocusTimer(); }
+  },1000);
+};
+
+window.endFocus = function(){
+  if(focusTimerId){clearInterval(focusTimerId);focusTimerId=null;}
   document.getElementById('focusOverlay').classList.remove('show');
-
-  // Calculate elapsed minutes (approximate)
-  var elapsedMins = (25 * 60 - focusSeconds) / 60;
-  if (focusRound > 1) elapsedMins += (focusRound - 1) * 25;
-  elapsedMins = Math.round(elapsedMins);
-  if (elapsedMins < 1) elapsedMins = 1;
-
-  focusMinutes += elapsedMins;
-  saveData();
-  renderCourses();
-  updateAllStats();
+  var elapsedMins=Math.round((25*60-focusSeconds)/60);
+  if(focusRound>1) elapsedMins+=(focusRound-1)*25;
+  if(elapsedMins<1) elapsedMins=1;
+  focusMinutes+=elapsedMins; saveAll();
+  renderTodayCourses(); updateAllStats();
   openReview(currentCourse);
 };
 
 // ==================== MINDFULNESS ====================
-window.openMindfulness = function() {
+window.openMindfulness = function(){
   document.getElementById('mindOverlay').classList.add('show');
-  mindSeconds = 120;
-  document.getElementById('mindTimer').textContent = '2:00';
-  document.getElementById('mindCircle').textContent = '吸气';
-
-  if (mindTimerId) clearInterval(mindTimerId);
-  var phases = ['吸气', '屏息', '呼气', '屏息'];
-  var phaseIdx = 0;
-
-  mindTimerId = setInterval(function() {
+  mindSeconds=120; document.getElementById('mindTimer').textContent='2:00'; document.getElementById('mindCircle').textContent='吸气';
+  if(mindTimerId) clearInterval(mindTimerId);
+  var phases=['吸气','屏息','呼气','屏息'], phaseIdx=0;
+  mindTimerId=setInterval(function(){
     mindSeconds--;
-    var m = Math.floor(mindSeconds / 60);
-    var s = mindSeconds % 60;
-    document.getElementById('mindTimer').textContent =
-      (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
-
-    if (mindSeconds % 4 === 0) {
-      phaseIdx = (phaseIdx + 1) % 4;
-      document.getElementById('mindCircle').textContent = phases[phaseIdx];
-    }
-
-    if (mindSeconds <= 0) {
-      clearInterval(mindTimerId);
-      mindTimerId = null;
-      endMindfulness();
-    }
-  }, 1000);
+    var m=Math.floor(mindSeconds/60),s=mindSeconds%60;
+    document.getElementById('mindTimer').textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+    if(mindSeconds%4===0){ phaseIdx=(phaseIdx+1)%4; document.getElementById('mindCircle').textContent=phases[phaseIdx]; }
+    if(mindSeconds<=0){ clearInterval(mindTimerId); mindTimerId=null; window.endMindfulness(); }
+  },1000);
 };
 
-window.endMindfulness = function() {
-  if (mindTimerId) { clearInterval(mindTimerId); mindTimerId = null; }
+window.endMindfulness = function(){
+  if(mindTimerId){clearInterval(mindTimerId);mindTimerId=null;}
   document.getElementById('mindOverlay').classList.remove('show');
-  mindSessions++;
-  saveData();
-  updateAllStats();
-  showToast('🧘 正念练习完成！身心都放松了');
+  mindSessions++; saveAll(); updateAllStats();
+  window.showToast('🧘 正念练习完成！身心都放松了');
 };
 
 // ==================== REVIEW ====================
-function openReview(course) {
-  if (!course) return;
-  var doneCount = 0;
-  for (var i = 0; i < course.tasks.length; i++) {
-    if (course.tasks[i].done) doneCount++;
-  }
-  var total = course.tasks.length;
-  var pct = total > 0 ? Math.round(doneCount / total * 100) : 0;
-
-  var emoji = pct >= 80 ? '🎉' : pct >= 50 ? '👍' : '💪';
-  var cls = pct >= 80 ? 'great' : pct >= 50 ? 'good' : 'ok';
-
-  var html = '<div class="review-score">';
-  html += '<div class="review-emoji">' + emoji + '</div>';
-  html += '<div class="review-pct ' + cls + '">' + course.name + ' · 完成率 ' + pct + '%</div>';
-  html += '</div>';
-
-  html += '<div class="review-section"><label>✅ 已完成</label>';
-  var hasDone = false;
-  for (var j = 0; j < course.tasks.length; j++) {
-    if (course.tasks[j].done) {
-      hasDone = true;
-      html += '<div class="task-item done"><div class="check">✓</div><span class="task-text">' + course.tasks[j].text + '</span></div>';
-    }
-  }
-  if (!hasDone) html += '<div style="font-size:13px;color:#999;padding:8px">暂无完成项，下次加油！</div>';
-  html += '</div>';
-
-  html += '<div class="review-section"><label>📝 未完成</label>';
-  var hasUndone = false;
-  for (var k = 0; k < course.tasks.length; k++) {
-    if (!course.tasks[k].done) {
-      hasUndone = true;
-      html += '<div class="task-item"><div class="check"></div><span class="task-text">' + course.tasks[k].text + '</span></div>';
-    }
-  }
-  if (!hasUndone) html += '<div style="font-size:13px;color:#16A085;padding:8px;font-weight:600">全部完成！太厉害了 🎉</div>';
-  html += '</div>';
-
-  var aiMsg = pct >= 80 ? '✨ 表现优秀！继续保持这个状态，你会越来越强。'
-    : pct >= 50 ? '📈 不错的表现！下次试试用番茄钟锁定专注时间。'
-    : '💪 还有提升空间。建议每次上课前先设定明确目标，开启番茄钟。';
-  html += '<div style="background:#F5F9FC;border-radius:12px;padding:14px;font-size:13px;color:#2980B9;margin-bottom:16px;line-height:1.6">🤖 AI 反馈：' + aiMsg + '</div>';
-  html += '<button class="btn-start" style="width:100%;padding:14px;font-size:16px" onclick="window.closeReview()">💾 保存记录并关闭</button>';
-
-  document.getElementById('reviewContent').innerHTML = html;
+function openReview(course){
+  if(!course) return;
+  if(!course.tasks) course.tasks=[];
+  var doneCount=0;
+  for(var i=0;i<course.tasks.length;i++){ if(course.tasks[i].done) doneCount++; }
+  var total=course.tasks.length, pct=total>0?Math.round(doneCount/total*100):0;
+  var emoji=pct>=80?'🎉':pct>=50?'👍':'💪', cls=pct>=80?'great':pct>=50?'good':'ok';
+  var html='<div class="review-score"><div class="review-emoji">'+emoji+'</div><div class="review-pct '+cls+'">'+course.name+' · 完成率 '+pct+'%</div></div>';
+  html+='<div class="review-section"><label>✅ 已完成</label>';
+  var hasDone=false;
+  for(var j=0;j<course.tasks.length;j++){ if(course.tasks[j].done){ hasDone=true; html+='<div class="task-item done"><div class="check">✓</div><span class="task-text">'+course.tasks[j].text+'</span></div>'; } }
+  if(!hasDone) html+='<div style="font-size:13px;color:#999;padding:8px">暂无完成项，下次加油！</div>';
+  html+='</div><div class="review-section"><label>📝 未完成</label>';
+  var hasUndone=false;
+  for(var k=0;k<course.tasks.length;k++){ if(!course.tasks[k].done){ hasUndone=true; html+='<div class="task-item"><div class="check"></div><span class="task-text">'+course.tasks[k].text+'</span></div>'; } }
+  if(!hasUndone) html+='<div style="font-size:13px;color:#16A085;padding:8px;font-weight:600">全部完成！太厉害了 🎉</div>';
+  html+='</div>';
+  var aiMsg=pct>=80?'✨ 表现优秀！继续保持这个状态，你会越来越强。':pct>=50?'📈 不错的表现！下次试试用番茄钟锁定专注时间。':'💪 还有提升空间。建议每次上课前先设定明确目标，开启番茄钟。';
+  html+='<div style="background:#F5F9FC;border-radius:12px;padding:14px;font-size:13px;color:#2980B9;margin-bottom:16px;line-height:1.6">🤖 AI 反馈：'+aiMsg+'</div>';
+  html+='<button class="btn-start" style="width:100%;padding:14px;font-size:16px" onclick="window.closeReview()">💾 保存记录并关闭</button>';
+  document.getElementById('reviewContent').innerHTML=html;
   document.getElementById('reviewModal').classList.add('show');
-
-  // Save record
-  records.push({
-    course: course.name,
-    type: course.type,
-    date: new Date().toLocaleDateString('zh-CN'),
-    done: doneCount,
-    total: total,
-    pct: pct
-  });
-  tasksDone += doneCount;
-  saveData();
+  records.push({course:course.name,type:course.type,date:new Date().toLocaleDateString('zh-CN'),done:doneCount,total:total,pct:pct});
+  tasksDone+=doneCount; saveAll();
 }
 
-window.closeReview = function() {
-  document.getElementById('reviewModal').classList.remove('show');
+window.closeReview = function(){ document.getElementById('reviewModal').classList.remove('show'); updateAllStats(); };
+
+// ==================== RECORDS PAGE ====================
+function updateAllStats(){
+  var elRate=document.getElementById('statRate');
+  if(elRate){ if(records.length>0){ var tp=0; for(var i=0;i<records.length;i++) tp+=records[i].pct; elRate.textContent=Math.round(tp/records.length)+'%'; } else elRate.textContent='--'; }
+  var elFocus=document.getElementById('statFocus'); if(elFocus) elFocus.textContent=(focusMinutes/60).toFixed(1)+'h';
+  var elSessions=document.getElementById('statSessions'); if(elSessions) elSessions.textContent=records.length+'次';
+  var elPfFocus=document.getElementById('pfFocus'); if(elPfFocus) elPfFocus.textContent=Math.round(focusMinutes/60)+'h';
+  var elPfTasks=document.getElementById('pfTasks'); if(elPfTasks) elPfTasks.textContent=tasksDone;
+  var elPfMind=document.getElementById('pfMind'); if(elPfMind) elPfMind.textContent=mindSessions+'次';
+  var rl=document.getElementById('recordList'); if(!rl) return;
+  if(records.length===0){ rl.innerHTML='<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">还没有专注记录<br>去今日课堂开始第一节课吧</div></div>'; return; }
+  var html='', recent=records.slice(-20).reverse();
+  for(var r=0;r<recent.length;r++){
+    var rec=recent[r], pctCls=rec.pct>=80?'great':rec.pct>=50?'good':'ok';
+    html+='<div class="record-item"><div class="record-top"><span class="record-name">'+rec.course+'</span><span class="record-pct '+pctCls+'">'+rec.pct+'%</span></div><div class="record-meta">'+rec.date+' · '+rec.type+' · '+rec.done+'/'+rec.total+' 项</div><div class="record-ai">🤖 '+(rec.pct>=80?'✨ 表现优秀！':rec.pct>=50?'📈 有进步空间，下次加油！':'💪 需要更多专注，试试番茄钟')+'</div></div>';
+  }
+  rl.innerHTML=html;
+}
+
+// ==================== SCHEDULE PAGE ====================
+window.openSchedule = function(){
+  document.querySelectorAll('.tab-item').forEach(function(t){t.classList.remove('active')});
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
+  document.getElementById('page-schedule').classList.add('active');
+  document.getElementById('mainTabBar').style.display='none';
+  currentWeekIdx = 0;
+  renderSchedulePage();
+};
+
+window.goProfile = function(){
+  document.getElementById('page-schedule').classList.remove('active');
+  document.getElementById('page-profile').classList.add('active');
+  document.getElementById('mainTabBar').style.display='flex';
   updateAllStats();
 };
 
-// ==================== RECORDS PAGE ====================
-function updateAllStats() {
-  // Stat cards
-  var elRate = document.getElementById('statRate');
-  if (elRate) {
-    if (records.length > 0) {
-      var totalPct = 0;
-      for (var i = 0; i < records.length; i++) totalPct += records[i].pct;
-      elRate.textContent = Math.round(totalPct / records.length) + '%';
+function getCourseCount(day){
+  return schedule.filter(function(c){ return c.day===day; }).length;
+}
+
+function renderSchedulePage(){
+  // Week nav
+  var navHtml='';
+  for(var w=-2;w<=4;w++){
+    var label='';
+    if(w===0) label='本周';
+    else if(w===1) label='下周';
+    else if(w===-1) label='上周';
+    else label='第'+(w>0?'+'+w:w)+'周';
+    navHtml+='<div class="week-chip'+(w===currentWeekIdx?' active':'')+'" onclick="window.switchWeek('+w+')">'+label+'</div>';
+  }
+  document.getElementById('weekNav').innerHTML=navHtml;
+
+  // Week grid
+  var gridHtml='';
+  for(var d=1;d<=5;d++){
+    var dayCourses = schedule.filter(function(c){ return c.day===d; });
+    dayCourses.sort(function(a,b){ return (a.startTime||'').localeCompare(b.startTime||''); });
+    gridHtml+='<div class="day-card"><div class="day-header"><span class="day-name">'+DAY_NAMES[d]+'</span><span class="day-date">'+(dayCourses.length||0)+'节课</span></div>';
+    if(dayCourses.length===0){
+      gridHtml+='<div class="sch-empty">暂无课程</div>';
     } else {
-      elRate.textContent = '--';
+      for(var ci=0;ci<dayCourses.length;ci++){
+        var c=dayCourses[ci];
+        gridHtml+='<div class="sch-course" style="border-left-color:'+(c.color||COLORS[ci%COLORS.length])+'" onclick="window.editCourse(\''+c.id+'\')"><div class="sc-name">'+c.name+'</div><div class="sc-meta">🕐 '+(c.startTime||'?')+' - '+(c.endTime||'?')+' · 📍 '+(c.room||'?')+' · 👤 '+(c.teacher||'?')+'</div></div>';
+      }
+    }
+    gridHtml+='</div>';
+  }
+  document.getElementById('weekGrid').innerHTML=gridHtml;
+}
+
+window.switchWeek = function(idx){ currentWeekIdx=idx; renderSchedulePage(); };
+
+// ==================== IMPORT MODAL ====================
+window.openImportModal = function(){
+  document.getElementById('importModal').classList.add('show');
+  document.getElementById('mEditId').value='';
+  document.getElementById('btnDeleteCourse').style.display='none';
+  clearForm();
+  switchImportTab('manual');
+};
+
+window.closeImport = function(){ document.getElementById('importModal').classList.remove('show'); };
+
+function switchImportTab(tab){
+  document.querySelectorAll('#importTabs .import-tab').forEach(function(t){t.classList.remove('active')});
+  document.querySelector('#importTabs .import-tab[data-tab="'+tab+'"]').classList.add('active');
+  document.getElementById('tab-manual').style.display=(tab==='manual'?'block':'none');
+  document.getElementById('tab-text').style.display=(tab==='text'?'block':'none');
+  document.getElementById('tab-json').style.display=(tab==='json'?'block':'none');
+}
+
+document.querySelectorAll('#importTabs .import-tab').forEach(function(t){
+  t.addEventListener('click',function(){ switchImportTab(this.dataset.tab); });
+});
+
+function clearForm(){
+  document.getElementById('mName').value='';
+  document.getElementById('mDay').value='1';
+  document.getElementById('mType').value='专业课';
+  document.getElementById('mStartTime').value='';
+  document.getElementById('mEndTime').value='';
+  document.getElementById('mRoom').value='';
+  document.getElementById('mTeacher').value='';
+  document.getElementById('mWeeks').value='';
+  document.getElementById('mTasks').value='';
+  document.getElementById('mEditId').value='';
+  document.getElementById('btnDeleteCourse').style.display='none';
+}
+
+// ==================== ADD / EDIT COURSE ====================
+window.openAddCourse = function(){
+  clearForm();
+  document.getElementById('mEditId').value='';
+  document.getElementById('btnDeleteCourse').style.display='none';
+  document.getElementById('importModal').classList.add('show');
+  switchImportTab('manual');
+};
+
+window.editCourse = function(cid){
+  var found=null;
+  for(var i=0;i<schedule.length;i++){ if(schedule[i].id===cid){ found=schedule[i]; break; } }
+  if(!found) return;
+  document.getElementById('mEditId').value=cid;
+  document.getElementById('btnDeleteCourse').style.display='block';
+  document.getElementById('mName').value=found.name||'';
+  document.getElementById('mDay').value=String(found.day!=null?found.day:1);
+  document.getElementById('mType').value=found.type||'专业课';
+  document.getElementById('mStartTime').value=found.startTime||'';
+  document.getElementById('mEndTime').value=found.endTime||'';
+  document.getElementById('mRoom').value=found.room||'';
+  document.getElementById('mTeacher').value=found.teacher||'';
+  document.getElementById('mWeeks').value=found.weeks||'';
+  document.getElementById('mTasks').value=(found.tasks||[]).map(function(t){return t.text}).join('\n');
+  document.getElementById('importModal').classList.add('show');
+  switchImportTab('manual');
+};
+
+window.saveCourse = function(){
+  var name=document.getElementById('mName').value.trim();
+  if(!name){ window.showToast('请输入课程名称'); return; }
+  var editId=document.getElementById('mEditId').value;
+  var courseObj = {
+    id: editId || generateId(),
+    name: name,
+    day: parseInt(document.getElementById('mDay').value),
+    type: document.getElementById('mType').value,
+    startTime: document.getElementById('mStartTime').value.trim(),
+    endTime: document.getElementById('mEndTime').value.trim(),
+    room: document.getElementById('mRoom').value.trim(),
+    teacher: document.getElementById('mTeacher').value.trim(),
+    weeks: document.getElementById('mWeeks').value.trim(),
+    color: COLORS[schedule.length%COLORS.length],
+    tasks: document.getElementById('mTasks').value.split('\n').filter(function(l){return l.trim()}).map(function(l){return{text:l.trim(),done:false}})
+  };
+
+  if(editId){
+    for(var i=0;i<schedule.length;i++){ if(schedule[i].id===editId){ schedule[i]=courseObj; break; } }
+  } else {
+    schedule.push(courseObj);
+  }
+  saveAll();
+  window.closeImport();
+  renderSchedulePage();
+  renderTodayCourses();
+  updateAllStats();
+  window.showToast('✅ 课程已保存');
+};
+
+window.deleteCourse = function(){
+  var editId=document.getElementById('mEditId').value;
+  if(!editId) return;
+  schedule=schedule.filter(function(c){return c.id!==editId;});
+  saveAll();
+  window.closeImport();
+  renderSchedulePage();
+  renderTodayCourses();
+  updateAllStats();
+  window.showToast('🗑 课程已删除');
+};
+
+// ==================== TEXT IMPORT ====================
+window.parseTextImport = function(){
+  var raw=document.getElementById('textInput').value.trim();
+  if(!raw){ window.showToast('请粘贴课表文本'); return; }
+  var count=0;
+  var currentDay=null;
+
+  // First try: detect day headers like "周一", "星期一"
+  var lines=raw.split('\n').map(function(l){return l.trim()}).filter(function(l){return l;});
+  var dayMap={'周一':1,'星期二':2,'周三':3,'周四':4,'周五':5,'周六':6,'周日':0,'星期一':1,'星期二':2,'星期三':3,'星期四':4,'星期五':5,'星期六':6,'星期日':0};
+  for(var li=0;li<lines.length;li++){
+    var line=lines[li];
+    // Check if this line is a day header
+    if(dayMap[line]!==undefined){
+      currentDay=dayMap[line]; continue;
+    }
+    // Check if line starts with a day name
+    for(var dk in dayMap){
+      if(line.indexOf(dk)===0){
+        currentDay=dayMap[dk];
+        line=line.substring(dk.length).trim();
+        break;
+      }
+    }
+    // Try to parse: "08:00-09:40 生理学 教学楼301"
+    var timeMatch=line.match(/(\d{1,2}:\d{2})\s*[-~至到]\s*(\d{1,2}:\d{2})/);
+    if(timeMatch && currentDay!==null){
+      var startTime=timeMatch[1], endTime=timeMatch[2];
+      var rest=line.replace(timeMatch[0],'').trim();
+      var parts=rest.split(/\s+/);
+      var name=parts[0]||'未命名';
+      var room=parts[1]||'';
+      schedule.push({
+        id:generateId(),name:name,day:currentDay,type:'专业课',
+        startTime:startTime,endTime:endTime,room:room,teacher:'',weeks:'',
+        color:COLORS[schedule.length%COLORS.length],
+        tasks:[{text:'记录课堂重点',done:false},{text:'完成课后练习',done:false}]
+      });
+      count++;
+    }
+    // Try "生理学 周一 08:00-09:40 教学楼301" format
+    else if(!timeMatch){
+      var dayFound=null;
+      for(var dk2 in dayMap){
+        if(line.indexOf(dk2)>=0){ dayFound=dayMap[dk2]; line=line.replace(dk2,''); break; }
+      }
+      var tm2=line.match(/(\d{1,2}:\d{2})\s*[-~至到]\s*(\d{1,2}:\d{2})/);
+      if(tm2 && dayFound!==null){
+        var st=tm2[1], et=tm2[2];
+        var rest2=line.replace(tm2[0],'').trim();
+        var parts2=rest2.split(/\s+/);
+        schedule.push({
+          id:generateId(),name:parts2[0]||'未命名',day:dayFound,type:'专业课',
+          startTime:st,endTime:et,room:parts2[1]||'',teacher:'',weeks:'',
+          color:COLORS[schedule.length%COLORS.length],
+          tasks:[{text:'记录课堂重点',done:false},{text:'完成课后练习',done:false}]
+        });
+        count++;
+      }
     }
   }
+  if(count===0){ window.showToast('未能解析任何课程，请检查格式'); return; }
+  saveAll();
+  window.closeImport();
+  renderSchedulePage();
+  renderTodayCourses();
+  updateAllStats();
+  window.showToast('✅ 成功导入 '+count+' 门课程');
+};
 
-  var elFocus = document.getElementById('statFocus');
-  if (elFocus) elFocus.textContent = (focusMinutes / 60).toFixed(1) + 'h';
+// ==================== JSON IMPORT ====================
+window.parseJSONImport = function(){
+  var raw=document.getElementById('jsonInput').value.trim();
+  if(!raw){ window.showToast('请粘贴 JSON 数据'); return; }
+  importJSONData(raw);
+};
 
-  var elSessions = document.getElementById('statSessions');
-  if (elSessions) elSessions.textContent = records.length + '次';
+window.handleJSONFile = function(input){
+  var file=input.files[0];
+  if(!file) return;
+  var reader=new FileReader();
+  reader.onload=function(e){ importJSONData(e.target.result); };
+  reader.readAsText(file);
+};
 
-  // Profile stats
-  var elPfFocus = document.getElementById('pfFocus');
-  if (elPfFocus) elPfFocus.textContent = Math.round(focusMinutes / 60) + 'h';
-
-  var elPfTasks = document.getElementById('pfTasks');
-  if (elPfTasks) elPfTasks.textContent = tasksDone;
-
-  var elPfMind = document.getElementById('pfMind');
-  if (elPfMind) elPfMind.textContent = mindSessions + '次';
-
-  // Record list
-  var rl = document.getElementById('recordList');
-  if (!rl) return;
-
-  if (records.length === 0) {
-    rl.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">还没有专注记录<br>去今日课堂开始第一节课吧</div></div>';
-    return;
-  }
-
-  var html = '';
-  var recent = records.slice(-20).reverse();
-  for (var r = 0; r < recent.length; r++) {
-    var rec = recent[r];
-    var pctCls = rec.pct >= 80 ? 'great' : rec.pct >= 50 ? 'good' : 'ok';
-    var aiMsg = rec.pct >= 80 ? '✨ 表现优秀，继续保持！'
-      : rec.pct >= 50 ? '📈 有进步空间，下次加油！'
-      : '💪 需要更多专注，试试开启番茄钟';
-    html += '<div class="record-item">';
-    html += '<div class="record-top"><span class="record-name">' + rec.course + '</span><span class="record-pct ' + pctCls + '">' + rec.pct + '%</span></div>';
-    html += '<div class="record-meta">' + rec.date + ' · ' + rec.type + ' · ' + rec.done + '/' + rec.total + ' 项</div>';
-    html += '<div class="record-ai">🤖 ' + aiMsg + '</div>';
-    html += '</div>';
-  }
-  rl.innerHTML = html;
+function importJSONData(raw){
+  try{
+    var data=JSON.parse(raw);
+    if(!Array.isArray(data)){ window.showToast('JSON 格式错误，需要数组'); return; }
+    var count=0;
+    for(var i=0;i<data.length;i++){
+      var item=data[i];
+      if(!item.name){ continue; }
+      schedule.push({
+        id:generateId(),
+        name:item.name,
+        day:typeof item.day==='number'?item.day:1,
+        type:item.type||'专业课',
+        startTime:item.startTime||item.time||'',
+        endTime:item.endTime||'',
+        room:item.room||'',
+        teacher:item.teacher||'',
+        weeks:item.weeks||'',
+        color:COLORS[schedule.length%COLORS.length],
+        tasks:Array.isArray(item.tasks)?item.tasks.map(function(t){return typeof t==='string'?{text:t,done:false}:{text:t.text||'',done:!!t.done};}):[{text:'记录课堂重点',done:false}]
+      });
+      count++;
+    }
+    if(count===0){ window.showToast('未找到有效的课程数据'); return; }
+    saveAll();
+    window.closeImport();
+    renderSchedulePage();
+    renderTodayCourses();
+    updateAllStats();
+    window.showToast('✅ 成功导入 '+count+' 门课程');
+  }catch(e){ window.showToast('JSON 解析失败: '+e.message); }
 }
 
 // ==================== TAB NAVIGATION ====================
-var tabs = document.querySelectorAll('.tab-item');
-for (var ti = 0; ti < tabs.length; ti++) {
-  tabs[ti].addEventListener('click', function() {
-    var pageName = this.getAttribute('data-page');
-    // Update tabs
-    var allTabs = document.querySelectorAll('.tab-item');
-    for (var a = 0; a < allTabs.length; a++) allTabs[a].classList.remove('active');
+document.querySelectorAll('#mainTabBar .tab-item').forEach(function(t){
+  t.addEventListener('click',function(){
+    var pageName=this.getAttribute('data-page');
+    document.querySelectorAll('#mainTabBar .tab-item').forEach(function(x){x.classList.remove('active')});
     this.classList.add('active');
-    // Update pages
-    var allPages = document.querySelectorAll('.page');
-    for (var b = 0; b < allPages.length; b++) allPages[b].classList.remove('active');
-    document.getElementById('page-' + pageName).classList.add('active');
-
-    if (pageName === 'records') updateAllStats();
+    document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
+    var pg=document.getElementById('page-'+pageName);
+    if(pg) pg.classList.add('active');
+    document.getElementById('mainTabBar').style.display='flex';
+    if(pageName==='records') updateAllStats();
   });
-}
+});
 
 // ==================== TOAST ====================
-window.showToast = function(msg) {
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(function() { t.classList.remove('show'); }, 1800);
+window.showToast = function(msg){
+  var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show')},1800);
 };
 
-// ==================== MODAL CLOSE ====================
-document.getElementById('reviewModal').addEventListener('click', function(e) {
-  if (e.target === this) window.closeReview();
-});
+// ==================== MODAL CLOSES ====================
+document.getElementById('reviewModal').addEventListener('click',function(e){if(e.target===this)window.closeReview()});
+document.getElementById('importModal').addEventListener('click',function(e){if(e.target===this)window.closeImport()});
 
 // ==================== INIT ====================
 loadData();
 initToday();
 updateAllStats();
-
-console.log('✅ 课堂专注力自我管理助手 v2.0 已就绪');
-console.log('📊 记录数:', records.length, '| 专注时长:', (focusMinutes/60).toFixed(1)+'h', '| 完成任务:', tasksDone);
+console.log('✅ 课堂专注力自我管理助手 v3.0 已就绪 · 课表管理已启用');
 })();
 </script>
 </body>
